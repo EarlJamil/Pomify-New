@@ -159,6 +159,56 @@
         transform: translateY(-5px);
       }
 
+      a {
+        color: white;
+        text-decoration: none;
+      }
+      .daily-insights {
+  background: linear-gradient(180deg, #fff7f7 0%, #ffeaea 100%);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(160, 0, 0, 0.1);
+}
+
+.insight-card.enhanced {
+  background: linear-gradient(145deg, #b44a4a, #6e0018);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.insight-card.enhanced:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(160, 0, 0, 0.3);
+}
+
+.icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.insight-card.enhanced p {
+  font-size: 0.95rem;
+  color: #f7eaea;
+}
+
+.insight-card.enhanced button,
+.insight-card.enhanced a {
+  border-radius: 25px;
+  transition: all 0.2s ease-in-out;
+}
+
+.insight-card.enhanced button:hover,
+.insight-card.enhanced a:hover {
+  transform: scale(1.05);
+}
+
 
     </style>
   </head>
@@ -194,7 +244,7 @@
         <!-- Sidebar (Desktop) -->
         <div class="col-3 col-md-2 sidebar d-none d-md-block">
           <h4 class="px-3 mb-4 text-danger fw-bold">
-            <a href="#"><img src="IMAGES/Logo.png" width="30"> Pomify.</a>
+            <img src="IMAGES/Logo.png" width="30"> Pomify.
           </h4>
           <nav class="nav flex-column">
             <a class="nav-link d-flex align-items-center active" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
@@ -261,27 +311,62 @@
             </div>
 
             <!-- Daily Insights Section -->
-            <h5 class="fw-bold text-danger mb-3">Your Daily Insights • Today</h5>
-            <div class="row g-4">
-              <div class="col-md-4">
-                <div class="insight-card p-4 rounded">
-                  <h6 class="fw-bold text-white">Today’s Study Tip</h6>
-                  <p class="text-light mb-0">Break large goals into smaller steps to stay productive.</p>
+            <section class="daily-insights my-5">
+              <h4 class="fw-bold text-danger mb-4">
+                <i class="bi bi-lightbulb me-2"></i>Your Daily Insights • Today
+              </h4>
+              
+              <div class="row g-4">
+                <!-- Study Tip -->
+                <div class="col-lg-4 col-md-6">
+                  <div class="insight-card enhanced p-4 rounded text-white h-100">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="icon-circle me-3">
+                        <i class="bi bi-journal-text fs-3"></i>
+                      </div>
+                      <h5 class="fw-bold mb-0">Today’s Study Tip</h5>
+                    </div>
+                    <p class="mb-3">
+                       Break large goals into smaller steps and reward yourself after each Pomodoro.
+                    </p>
+                    <button class="btn btn-light text-danger fw-semibold btn-sm mt-auto">Learn More</button>
+                  </div>
+                </div>
+
+                <!-- Study Now -->
+                <div class="col-lg-4 col-md-6">
+                  <div class="insight-card enhanced p-4 rounded text-white h-100">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="icon-circle me-3">
+                        <i class="bi bi-alarm fs-3"></i>
+                      </div>
+                      <h5 class="fw-bold mb-0">Study Now</h5>
+                    </div>
+                    <p class="mb-3">
+                      Ready to boost productivity? Start your <strong>Pomodoro</strong> session and focus deeply for 25 minutes.
+                    </p>
+                    <a href="Pomodoro.html" class="btn btn-light text-danger fw-semibold btn-sm mt-auto">Start Pomodoro</a>
+                  </div>
+                </div>
+
+                <!-- Log Your Tasks -->
+                <div class="col-lg-4 col-md-6">
+                  <div class="insight-card enhanced p-4 rounded text-white h-100">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="icon-circle me-3">
+                        <i class="bi bi-list-check fs-3"></i>
+                      </div>
+                      <h5 class="fw-bold mb-0">Log Your Tasks</h5>
+                    </div>
+                    <p class="mb-3">
+                      Track your goals, monitor progress, and visualize your daily achievements with ease.
+                    </p>
+                    <a href="#" class="btn btn-light text-danger fw-semibold btn-sm mt-auto">View Tasks</a>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="insight-card p-4 rounded">
-                  <h6 class="fw-bold text-white">Study Now</h6>
-                  <p class="text-light mb-0">Focus and begin your Pomodoro session today!</p>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="insight-card p-4 rounded">
-                  <h6 class="fw-bold text-white">Log Your Tasks</h6>
-                  <p class="text-light mb-0">Track progress and review your daily performance.</p>
-                </div>
-              </div>
-            </div>
+            </section>
+
           </div>
 
             </div>
