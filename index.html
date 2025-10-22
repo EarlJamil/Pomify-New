@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pomify Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background: #fff;
+      }
+      .sidebar {
+        background: #f9f9f9;
+        min-height: 100vh;
+        padding-top: 20px;
+        border-right: 1px solid #ddd;
+      }
+      .sidebar .nav-link {
+        color: #000;
+        font-weight: 500;
+        padding: 10px 20px;
+      }
+      .sidebar .nav-link.active {
+        background: #3b2b29;
+        color: #fff;
+        border-radius: 6px;
+      }
+      .topbar {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 20px;
+      }
+      .search-container {
+        position: relative;
+        width: 250px;
+      }
+      .search-container i {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: #555;
+      }
+      .search-box {
+        width: 100%;
+        padding: 8px 12px 8px 35px;
+        border-radius: 20px;
+        border: none;
+        background-color: #e5e3e4;
+        outline: none;
+      }
+      .currency {
+        background: #eee;
+        color: #a00000;
+        font-weight: bold;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+      }
+      .dashboard-section {
+        padding: 30px;
+      }
+      .welcome {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #a00000;
+      }
+      .card-custom {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+      .card-custom:hover {
+        transform: translateY(-5px);
+      }
+      .red-banner {
+        background: linear-gradient(90deg, #8b0000, #d23a3a);
+        color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+      }
+      .insight-title {
+        color: #a00000;
+        font-weight: bold;
+      }
+      .card-insight {
+        border-radius: 12px;
+        background: #f9f9f9;
+        text-align: center;
+        padding: 25px;
+      }
+      .card-insight i {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+      .card-insight h5 {
+        color: #a00000;
+        font-weight: 600;
+      }
+      @media (max-width: 767.98px) {
+        .topbar {
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .search-container {
+          width: 100%;
+        }
+        .currency {
+          font-size: 12px;
+          padding: 3px 8px;
+        }
+      }
+      .dashboard-section {
+        background: #cdbebe;
+        color: #fff;
+        min-height: 100vh;
+        padding-top: 40px;
+      }
+
+      .dashboard-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 30px;
+        width: 70%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(6px);
+      }
+
+      .info-card {
+        background: #fff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+      }
+      .info-card:hover {
+        transform: translateY(-5px);
+      }
+      .dashboard {
+        background-color: #fff;
+        min-height: 100vh;
+      }
+
+      .welcome-banner {
+        background: linear-gradient(180deg, #b44a4a 0%, #4a001f 100%);
+        border-radius: 20px;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .insight-card {
+        background: #a00000;
+        border-radius: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s ease;
+      }
+      .insight-card:hover {
+        transform: translateY(-5px);
+      }
+
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <!-- Offcanvas (Mobile Sidebar) -->
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title text-danger fw-bold" id="mobileSidebarLabel">
+            <img src="IMAGES/Logo.png" width="30"> Pomify.
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <nav class="nav flex-column">
+            <a class="nav-link d-flex align-items-center active" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenuMobile" role="button" aria-expanded="false" aria-controls="studyMenuMobile">
+              <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
+            </a>
+            <div class="collapse show submenu ps-4" id="studyMenuMobile">
+              <a class="nav-link d-flex align-items-center" href="Pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
+              <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
+            </div>
+            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-slash-circle me-2"></i> Distraction Log</a>
+            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Sidebar (Desktop) -->
+        <div class="col-3 col-md-2 sidebar d-none d-md-block">
+          <h4 class="px-3 mb-4 text-danger fw-bold">
+            <img src="IMAGES/Logo.png" width="30"> Pomify.
+          </h4>
+          <nav class="nav flex-column">
+            <a class="nav-link d-flex align-items-center active" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="false" aria-controls="studyMenu">
+              <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
+            </a>
+            <div class="collapse show submenu ps-4" id="studyMenu">
+              <a class="nav-link d-flex align-items-center" href="pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
+              <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
+            </div>
+            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-slash-circle me-2"></i> Distraction Log</a>
+            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+          </nav>
+        </div>
+
+       <!-- Main Content -->
+        <div class="col-12 col-md-10 p-0">
+          <div class="d-block d-md-none text-center my-2">
+            <img src="IMAGES/Logo.png" width="40" class="mb-1">
+            <h2 class="text-danger fw-bold m-0">Pomify.</h2>
+          </div>
+
+          <!-- Topbar -->
+          <div class="d-flex justify-content-between align-items-center topbar flex-wrap">
+            <div></div>
+            <div class="d-flex align-items-center gap-3">
+              <button class="btn btn-outline-dark d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="bi bi-list"></i>
+              </button>
+              <div class="search-container">
+                <i class="bi bi-search"></i>
+                <input class="search-box" type="search" placeholder="Search">
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="currency d-flex align-items-center gap-1 px-2 py-1 rounded">
+                  <img src="IMAGES/Coin Icon.png" alt="coin" style="width:18px; height:18px;">
+                  <span id="coins">0</span>
+                  <button id="addCoinBtn" class="btn btn-sm p-0" style="width:22px; height:22px;" title="Add coin">+</button>
+                </span>
+              </div>
+              <img src="IMAGES/User Profile.png" width="30">
+            </div>
+          </div>
+
+          <!-- Dashboard Gradient Section -->
+          <div class="dashboard px-4 py-5">
+            <h2 class="fw-bold text-danger mb-4">Welcome, @username!</h2>
+
+            <!-- Gradient Welcome Banner -->
+            <div class="welcome-banner p-4 mb-4">
+              <div class="d-flex justify-content-between align-items-start flex-wrap">
+                <div>
+                  <h5 class="fw-bold text-white mb-2">Pomify.</h5>
+                  <h3 class="fw-bold text-white mb-1">Unlock Your Full Potential</h3>
+                  <p class="text-light mb-3">
+                    Success is built one study session at a time — let Pomify help you make every moment count.
+                  </p>
+                  <button class="btn btn-light fw-semibold me-2">Subscribe Now</button>
+                  <button class="btn btn-outline-light fw-semibold">Learn More</button>
+                </div>
+                <button class="btn btn-link text-white fs-5 p-0"><i class="bi bi-x-circle"></i></button>
+              </div>
+            </div>
+
+            <!-- Daily Insights Section -->
+            <h5 class="fw-bold text-danger mb-3">Your Daily Insights • Today</h5>
+            <div class="row g-4">
+              <div class="col-md-4">
+                <div class="insight-card p-4 rounded">
+                  <h6 class="fw-bold text-white">Today’s Study Tip</h6>
+                  <p class="text-light mb-0">Break large goals into smaller steps to stay productive.</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="insight-card p-4 rounded">
+                  <h6 class="fw-bold text-white">Study Now</h6>
+                  <p class="text-light mb-0">Focus and begin your Pomodoro session today!</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="insight-card p-4 rounded">
+                  <h6 class="fw-bold text-white">Log Your Tasks</h6>
+                  <p class="text-light mb-0">Track progress and review your daily performance.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            </div>
+          </div>
+        </div>
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const coins = localStorage.getItem("pomify_coins") || 0;
+        document.getElementById("coins").textContent = coins;
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
