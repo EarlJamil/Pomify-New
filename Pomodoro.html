@@ -73,6 +73,7 @@
       .btn-gray {
         background: #aaa;
         color: #fff;
+        pointer-events: none;
       }
       .search-container {
         position: relative;
@@ -308,7 +309,10 @@
         timeLeft = isWork ? workMinutes * 60 : breakMinutes * 60;
 
         startBtn.disabled = true;
-        resetBtn.disabled = true;
+        resetBtn.disabled = false;
+        resetBtn.classList.remove("btn-gray");
+        startBtn.classList.add("btn-gray");
+        resetBtn.classList.add("btn-red");
 
         document.getElementById("status").innerHTML = isWork ? "Work Session" : "Break Time!";
         updateDisplay();
@@ -321,31 +325,46 @@
             clearInterval(timer);
             alarm.play();
 
-            // Enable reset after session completes
-            resetBtn.disabled = false;
-
-            // Increment coins ONLY after finishing a WORK session
+            // If the work session just ended
             if (isWork) {
               coins++;
               coinsSpan.textContent = coins;
               saveCoins();
 
-              // Mark the current active task done (if any)
               if (activeTask) {
                 activeTask.classList.add("done");
                 activeTask.classList.remove("active");
                 activeTask = null;
               }
-            }
 
-            // toggle session type
-            isWork = !isWork;
-            document.getElementById("status").innerHTML = isWork ? "Work Session" : "Break Time!";
-            startBtn.disabled = false;
-            updateDisplay();
+              // Switch to break automatically
+              isWork = false;
+              document.getElementById("status").innerHTML = "Break Time!";
+              startBtn.disabled = true;
+              resetBtn.disabled = true;
+              updateDisplay();
+
+              // Start break timer after 3 seconds
+              setTimeout(startTimer, 3000);
+            } 
+            // If the break session just ended
+            else {
+              isWork = true;
+              document.getElementById("status").innerHTML = "Session Complete!";
+              startBtn.disabled = false;
+              resetBtn.disabled = true;
+              resetBtn.classList.add("btn-gray");
+              startBtn.classList.remove("btn-gray");
+              startBtn.classList.add("btn-red");
+
+              // Reset display to work time
+              let workMinutes = parseInt(document.getElementById("workTime")?.value) || 25;
+              timeLeft = workMinutes * 60;
+              updateDisplay();
+            }
           }
         }, 1000);
-      }
+      }gi
 
       function resetTimer() {
         clearInterval(timer);
@@ -356,6 +375,9 @@
         updateDisplay();
         startBtn.disabled = false;
         resetBtn.disabled = true;
+        resetBtn.classList.add("btn-gray");
+        startBtn.classList.remove("btn-gray");
+        startBtn.classList.add("btn-red");
       }
 
       // --- Task System ---
