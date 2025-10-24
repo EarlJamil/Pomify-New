@@ -154,53 +154,29 @@
 
   <body>
     <div class="container-fluid">
-      <!-- Offcanvas (Mobile Sidebar) -->
-      <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title text-danger fw-bold" id="mobileSidebarLabel">
-            <a><img src="IMAGES/Logo.png" width="30"> Pomify.</a>
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-          <nav class="nav flex-column">
-            <a class="nav-link d-flex align-items-center" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-list-task me-2"></i> Task Management</a>
-            <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenuMobile" role="button" aria-expanded="false" aria-controls="studyMenuMobile">
-              <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
-            </a>
-            <div class="collapse show submenu ps-4" id="studyMenuMobile">
-              <a class="nav-link d-flex align-items-center" href="Pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
-              <a class="nav-link d-flex align-items-center  active" href="#"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
-            </div>
-            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-slash-circle me-2"></i> Distraction Log</a>
-            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
-          </nav>
-        </div>
-      </div>
-        <!-- Sidebar (Desktop) -->
       <div class="row">
-        
+        <!-- Sidebar -->
         <div class="col-3 col-md-2 sidebar d-none d-md-block">
           <h4 class="px-3 mb-4 text-danger fw-bold">
             <img src="IMAGES/Logo.png" width="30"> Pomify.
           </h4>
           <nav class="nav flex-column">
-            <a class="nav-link d-flex align-items-center" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link d-flex align-items-center " href="#"><i class="bi bi-list-task me-2"></i> Task Management</a>
-            <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="false" aria-controls="studyMenu">
+            <a class="nav-link" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a class="nav-link" href="#"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="true" aria-controls="studyMenu">
               <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
             </a>
             <div class="collapse show submenu ps-4" id="studyMenu">
-              <a class="nav-link d-flex align-items-center" href="Pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
-              <a class="nav-link d-flex align-items-center  active" href="#"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
+              <a class="nav-link" href="Pomodoro.html"><i class="bi bi-clock me-2"></i>Pomodoro</a>
+              <a class="nav-link active" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i>Eisenhower Matrix</a>
+              <a class="nav-link" href="Mind-Mapping.html"><i class="bi bi-diagram-3 me-2"></i>Mind Mapping</a>
             </div>
-            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-slash-circle me-2"></i> Distraction Log</a>
-            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+            <a class="nav-link" href="Membership.html"><i class="bi bi-slash-circle me-2"></i>Membership Subscription</a>
+            <a class="nav-link" href="#"><i class="bi bi-gear me-2"></i>Settings</a>
           </nav>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main -->
         <div class="col-12 col-md-10 p-0">
           <div class="d-block d-md-none text-center my-2">
             <img src="IMAGES/Logo.png" width="40" class="mb-1">
@@ -211,18 +187,14 @@
           <div class="d-flex justify-content-between align-items-center topbar flex-wrap">
             <div></div>
             <div class="d-flex align-items-center gap-3">
-              <button class="btn btn-outline-dark d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                <i class="bi bi-list"></i>
-              </button>
               <div class="search-container">
                 <i class="bi bi-search"></i>
                 <input class="search-box" type="search" placeholder="Search">
               </div>
               <div class="d-flex align-items-center gap-2">
                 <span class="currency d-flex align-items-center gap-1 px-2 py-1 rounded">
-                  <img src="IMAGES/Coin Icon.png" alt="coin" style="width:18px; height:18px;">
+                  <img src="IMAGES/Coin Icon.png" alt="coin" style="width:18px;height:18px;">
                   <span id="coins">0</span>
-                  <button id="addCoinBtn" class="btn btn-sm p-0" style="width:22px; height:22px;" title="Add coin">+</button>
                 </span>
               </div>
               <img src="IMAGES/User Profile.png" width="30">
@@ -281,12 +253,204 @@
     </div>
   </div>
 
-</div>
-
-
 
         </div>
-    <script src = "JS/Eisenhower.js"></script>
+    
+    <script>
+        const SECTIONS = ["do", "decide", "delegate", "delete", "done"];
+        let taskCounter = 0;
+
+        function addTask() {
+            const input = document.getElementById("taskInput");
+            const text = input.value.trim();
+            if (!text) return;
+            const task = createTaskElement(text, false);
+            document.getElementById("do").appendChild(task);
+            input.value = "";
+            saveAllTasks();
+        }
+
+        function createTaskElement(text, completed = false) {
+            const task = document.createElement("div");
+            task.className = "task-item" + (completed ? " done " : " ") +
+                            "d-flex justify-content-between align-items-center border rounded px-2 py-1 my-1 bg-white";
+            task.id = "task-" + (Date.now() + "-" + (taskCounter++));
+            task.draggable = !completed;
+
+            const span = document.createElement("span");
+            span.textContent = text;
+            span.className = "text-start flex-grow-1";
+
+            const btnGroup = document.createElement("div");
+            btnGroup.className = "d-flex gap-1";
+
+            if (!completed) {
+                const editBtn = document.createElement("button");
+                editBtn.className = "btn btn-sm btn-outline-primary";
+                editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+                editBtn.title = "Edit";
+                editBtn.onclick = () => editTask(span);
+
+                const doneBtn = document.createElement("button");
+                doneBtn.className = "btn btn-sm btn-outline-success";
+                doneBtn.innerHTML = '<i class="bi bi-check2-circle"></i>';
+                doneBtn.title = "Mark done";
+                doneBtn.onclick = () => markDone(task);
+
+                const delBtn = document.createElement("button");
+                delBtn.className = "btn btn-sm btn-outline-danger";
+                delBtn.innerHTML = '<i class="bi bi-trash"></i>';
+                delBtn.title = "Delete";
+                delBtn.onclick = () => {
+                task.remove();
+                saveAllTasks();
+                };
+
+                // Add all buttons to the group
+                btnGroup.append(editBtn, doneBtn, delBtn);
+            }
+
+            // Append elements
+            task.append(span, btnGroup);
+
+            // ✅ Enable dragging for non-completed tasks
+            if (!completed) {
+                task.addEventListener("dragstart", drag);
+            }
+
+            return task;
+            }
+
+
+        function editTask(span) {
+            const current = span.textContent;
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = current;
+            input.className = "form-control form-control-sm";
+            span.replaceWith(input);
+            input.focus();
+
+            input.addEventListener("blur", () => finishEdit(input, current));
+            input.addEventListener("keydown", e => {
+            if (e.key === "Enter") finishEdit(input, current);
+            });
+        }
+
+        function finishEdit(input, oldText) {
+            const newText = input.value.trim() || oldText;
+            const span = document.createElement("span");
+            span.textContent = newText;
+            input.replaceWith(span);
+            saveAllTasks();
+        }
+
+        function markDone(task) {
+            // Remove all buttons
+            task.querySelectorAll("button").forEach(btn => btn.remove());
+            
+            // Mark visually as done
+            task.classList.add("done");
+            task.querySelector("span").style.textDecoration = "line-through";
+            task.draggable = false;
+            task.removeEventListener("dragstart", drag);
+            
+            // Move to "done" section
+            document.getElementById("done").appendChild(task);
+            saveAllTasks();
+        }
+
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            const id = ev.target.closest(".task-item").id;
+            ev.dataTransfer.setData("text/plain", id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text/plain");
+            const task = document.getElementById(id);
+            if (!task) return;
+            const target = ev.currentTarget;
+
+            if (target.id === "done") {
+                markDone(task); // <— now this will remove buttons properly
+            } else {
+                target.appendChild(task);
+            }
+
+            saveAllTasks();
+        }
+
+        function saveAllTasks() {
+            const allTasks = {};
+            SECTIONS.forEach(section => {
+            const container = document.getElementById(section);
+            allTasks[section] = Array.from(container.children).map(task => ({
+                text: task.querySelector("span").textContent,
+                done: task.classList.contains("done")
+            }));
+            });
+
+            localStorage.setItem("eisenhower_tasks", JSON.stringify(allTasks));
+            localStorage.setItem("pomify_do_tasks", JSON.stringify(allTasks["do"].map(t => t.text)));
+        }
+
+        function loadAllTasks() {
+            const data = JSON.parse(localStorage.getItem("eisenhower_tasks")) || {};
+            SECTIONS.forEach(section => {
+            const container = document.getElementById(section);
+            container.innerHTML = "";
+            (data[section] || []).forEach(taskData => {
+                const el = createTaskElement(taskData.text, taskData.done);
+                container.appendChild(el);
+            });
+            });
+        }
+
+        window.addEventListener("storage", e => {
+            if (e.key === "pomify_do_tasks") {
+            const doTasks = JSON.parse(localStorage.getItem("pomify_do_tasks")) || [];
+            const all = JSON.parse(localStorage.getItem("eisenhower_tasks")) || {};
+            all["do"] = doTasks.map(t => ({ text: t, done: false }));
+            localStorage.setItem("eisenhower_tasks", JSON.stringify(all));
+            loadAllTasks();
+            }
+        });
+
+         let coins = parseInt(localStorage.getItem('pomify_coins')) || 0;
+            const coinsSpan = document.getElementById("coins");
+
+            coinsSpan.textContent = coins;
+
+            // Example: Add coin button works here too
+            // const addCoinBtn = document.getElementById("addCoinBtn");
+            // addCoinBtn.addEventListener("click", () => {
+            //     coins++;
+            //     coinsSpan.textContent = coins;
+            //     localStorage.setItem('pomify_coins', coins);
+            // });
+
+            // Sync real-time if other tab updates it
+            window.addEventListener("storage", (event) => {
+                if (event.key === "pomify_coins") {
+                coins = parseInt(event.newValue) || 0;
+                coinsSpan.textContent = coins;
+                }
+            });
+
+        window.onload = loadAllTasks;
+        </script>
+
+
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
