@@ -171,7 +171,7 @@
             </a>
             <div class="collapse show submenu ps-4" id="studyMenuMobile">
               <a class="nav-link d-flex align-items-center active" href="Pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
-              <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
+              <a class="nav-link d-flex align-items-center" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
             </div>
             <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-slash-circle me-2"></i> Distraction Log</a>
             <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
@@ -187,13 +187,13 @@
           </h4>
           <nav class="nav flex-column">
             <a class="nav-link d-flex align-items-center" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link d-flex align-items-center" href="Eisenhower.html"><i class="bi bi-list-task me-2"></i> Task Management</a>
             <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="false" aria-controls="studyMenu">
               <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
             </a>
             <div class="collapse show submenu ps-4" id="studyMenu">
               <a class="nav-link d-flex align-items-center active" href="Pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
-              <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
+              <a class="nav-link d-flex align-items-center" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
             </div>
             <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-slash-circle me-2"></i> Distraction Log</a>
             <a class="nav-link d-flex align-items-center" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
@@ -420,6 +420,68 @@
         activeTask = btn.closest("li");
         activeTask.classList.add("active");
       }
+      
+
+      // --- Load DO tasks from Eisenhower ---
+      function loadTasks() {
+        const savedTasks = JSON.parse(localStorage.getItem("pomify_do_tasks")) || [];
+        const taskList = document.getElementById("taskItems");
+        taskList.innerHTML = "";
+        savedTasks.forEach(text => addTaskToList(text));
+        updateDisplay();
+      }
+
+      // --- Add Task (both UI + localStorage) ---
+      function addTask() {
+        const input = document.getElementById("taskInput");
+        const text = input.value.trim();
+        if (!text) return;
+        addTaskToList(text);
+        input.value = "";
+        syncToEisenhower();
+      }
+
+      function addTaskToList(text) {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${text}</span>
+          <div>
+            <button class="btn btn-sm btn-outline-danger me-1" onclick="removeTask(this)">
+              <i class="bi bi-trash"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-dark" onclick="setActiveTask(this)">
+              <i class="bi bi-hourglass-split"></i>
+            </button>
+          </div>
+        `;
+        document.getElementById("taskItems").appendChild(li);
+      }
+
+      // --- Remove Task ---
+      function removeTask(btn) {
+        const li = btn.closest("li");
+        if (li === activeTask) activeTask = null;
+        li.remove();
+        syncToEisenhower();
+      }
+
+      // --- Sync Pomodoro tasks back to Eisenhower ---
+      function syncToEisenhower() {
+        const taskTexts = Array.from(document.querySelectorAll("#taskItems li span"))
+          .map(span => span.textContent.trim());
+        localStorage.setItem("pomify_do_tasks", JSON.stringify(taskTexts));
+      }
+
+      // --- Real-time update if Eisenhower changes ---
+      window.addEventListener("storage", (event) => {
+        if (event.key === "pomify_do_tasks") loadTasks();
+      });
+
+      // --- On load ---
+      window.onload = loadTasks;
+
+      
+
 
       // initial display
       updateDisplay();
