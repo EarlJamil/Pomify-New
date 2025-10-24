@@ -73,7 +73,10 @@
       .btn-gray {
         background: #aaa;
         color: #fff;
-        pointer-events: none;
+      }
+      .btn-gray:hover {
+        background: #aaa;
+        color: #fff;
       }
       .search-container {
         position: relative;
@@ -300,6 +303,9 @@
         document.getElementById("time").innerHTML =
           (minutes < 10 ? "0" : "") + minutes + ":" +
           (seconds < 10 ? "0" : "") + seconds;
+        document.title = 
+          (minutes < 10 ? "0" : "") + minutes + ":" +
+          (seconds < 10 ? "0" : "") + seconds + " Pomodoro ";
       }
 
       function startTimer() {
