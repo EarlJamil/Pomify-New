@@ -123,6 +123,27 @@
         text-decoration: line-through;
         color: gray;
       }
+      .time-inputs {
+        flex-wrap: wrap;
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 767.98px) {
+        .time-inputs {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+
+        .time-inputs input {
+          width: 100% !important;
+        }
+
+        .time-inputs label {
+          display: block;
+          margin-bottom: 4px;
+        }
+      }
       @media (max-width: 767.98px) {
         .circle {
           width: 220px;
@@ -264,7 +285,7 @@
           <div class="d-flex flex-column align-items-center justify-content-center mt-5">
             <h2 class="fw-bold text-danger">POMODORO</h2>
 
-            <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center gap-3 mb-3 time-inputs">
               <div>
                 <label class="fw-semibold">Work (min):</label>
                 <input type="number" id="workTime" value="25" min="1" class="form-control w-auto d-inline-block">
@@ -274,6 +295,7 @@
                 <input type="number" id="breakTime" value="5" min="1" class="form-control w-auto d-inline-block">
               </div>
             </div>
+
 
             <div class="circle">
               <div id="time">25:00</div>
