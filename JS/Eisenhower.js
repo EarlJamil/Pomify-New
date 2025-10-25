@@ -170,25 +170,5 @@ window.addEventListener("storage", e => {
     }
 });
 
-    let coins = parseInt(localStorage.getItem('pomify_coins')) || 0;
-    const coinsSpan = document.getElementById("coins");
-
-    coinsSpan.textContent = coins;
-
-    // Example: Add coin button works here too
-    // const addCoinBtn = document.getElementById("addCoinBtn");
-    // addCoinBtn.addEventListener("click", () => {
-    //     coins++;
-    //     coinsSpan.textContent = coins;
-    //     localStorage.setItem('pomify_coins', coins);
-    // });
-
-    // Sync real-time if other tab updates it
-    window.addEventListener("storage", (event) => {
-        if (event.key === "pomify_coins") {
-        coins = parseInt(event.newValue) || 0;
-        coinsSpan.textContent = coins;
-        }
-    });
 
 window.onload = loadAllTasks;
