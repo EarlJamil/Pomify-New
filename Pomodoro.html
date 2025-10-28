@@ -186,7 +186,7 @@
         <div class="offcanvas-body">
           <nav class="nav flex-column">
             <a class="nav-link d-flex align-items-center active" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link d-flex align-items-center" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link d-flex align-items-center" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Calendar</a>
             <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenuMobile" role="button" aria-expanded="false" aria-controls="studyMenuMobile">
               <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
             </a>
@@ -215,7 +215,7 @@
         <div class="offcanvas-body">
           <nav class="nav flex-column">
             <a class="nav-link d-flex align-items-center" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link d-flex align-items-center" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link d-flex align-items-center" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Calendar</a>
             <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenuMobile" role="button" aria-expanded="false" aria-controls="studyMenuMobile">
               <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
             </a>
@@ -239,7 +239,7 @@
           </h4>
           <nav class="nav flex-column">
             <a class="nav-link" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Task Management</a>
+            <a class="nav-link" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Calendar</a>
             <a class="nav-link" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="true" aria-controls="studyMenu">
               <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
             </a>
@@ -300,6 +300,7 @@
             <div class="circle">
               <div id="time">25:00</div>
               <div id="status">FOCUS</div>
+              <p id="extraSessionStatus" class="text-muted mt-2 small"></p>
             </div>
 
             <div class="timer-buttons mt-3">
@@ -323,45 +324,84 @@
       </div>
     </div>
     <script>
-      // Timer & Task variables
+      // --- Timer & Task variables ---
       let timer;
       let isWork = true;
       let timeLeft = 25 * 60;
       let activeTask = null;
 
-    
-      let coins = parseInt(localStorage.getItem('pomify_coins')) || 0;
+      // --- Coins & Mechanics (Persistent via localStorage) ---
+      let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
+      let dailyPomodoros = parseInt(localStorage.getItem("pomify_dailyPomodoros")) || 0;
+      const maxDailyPomodoros = 5;
+      let extraSessionUsed = JSON.parse(localStorage.getItem("pomify_extraSessionUsed")) || false;
 
       const startBtn = document.getElementById("startBtn");
       const resetBtn = document.getElementById("resetBtn");
       const coinsSpan = document.getElementById("coins");
       const addCoinBtn = document.getElementById("addCoinBtn");
       const alarm = document.getElementById("alarm");
+      const extraSessionStatus = document.getElementById("extraSessionStatus");
 
-     
+      // --- Initialize display ---
       coinsSpan.textContent = coins;
+      updateExtraSessionStatus();
+      updateDisplay();
 
-      function saveCoins() {
-        localStorage.setItem('pomify_coins', coins);
+      // --- Helper: Update session status text ---
+      function updateExtraSessionStatus() {
+        if (dailyPomodoros < maxDailyPomodoros) {
+          extraSessionStatus.textContent = `Pomodoros used today: ${dailyPomodoros}/5`;
+        } else if (!extraSessionUsed) {
+          extraSessionStatus.textContent = "Extra session available: 1 remaining today.";
+        } else {
+          extraSessionStatus.textContent = "Extra session used for today.";
+        }
       }
 
-     
-      addCoinBtn.addEventListener('click', (e) => {
-        e.preventDefault(); 
-      });
-
+      // --- Timer display ---
       function updateDisplay() {
         let minutes = Math.floor(timeLeft / 60);
         let seconds = timeLeft % 60;
         document.getElementById("time").innerHTML =
-          (minutes < 10 ? "0" : "") + minutes + ":" +
-          (seconds < 10 ? "0" : "") + seconds;
-        document.title = 
-          (minutes < 10 ? "0" : "") + minutes + ":" +
-          (seconds < 10 ? "0" : "") + seconds + " Pomodoro ";
+          (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        document.title =
+          (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " Pomodoro";
       }
 
+      // --- Start Timer Function ---
       function startTimer() {
+        // --- Limit enforcement ---
+        if (dailyPomodoros >= maxDailyPomodoros) {
+          if (!extraSessionUsed) {
+            if (coins > 0) {
+              let useCoin = confirm(
+                "You've reached your daily limit of 5 Pomodoro sessions.\nUse 1 coin to unlock one more session?"
+              );
+              if (useCoin) {
+                coins--;
+                localStorage.setItem("pomify_coins", coins);
+                coinsSpan.textContent = coins;
+                extraSessionUsed = true;
+                localStorage.setItem("pomify_extraSessionUsed", true);
+                alert("You used 1 coin. You now have one extra Pomodoro session for today!");
+                updateExtraSessionStatus(); // 👈 instantly refresh UI
+              } else {
+                alert("You’ve reached your daily limit. You can still use 1 coin later today to continue!");
+                updateExtraSessionStatus();
+                return; // user said No, so stop timer now
+              }
+            } else {
+              alert("You've reached your daily limit of 5 Pomodoro sessions.\nEarn or buy coins to continue!");
+              return;
+            }
+          } else {
+            alert("You’ve already used your 1 extra session for today!");
+            return;
+          }
+        }
+
+        // --- Normal timer start ---
         clearInterval(timer);
         let workMinutes = parseInt(document.getElementById("workTime")?.value) || 25;
         let breakMinutes = parseInt(document.getElementById("breakTime")?.value) || 5;
@@ -384,11 +424,17 @@
             clearInterval(timer);
             alarm.play();
 
-            // If the work session just ended
             if (isWork) {
+              // --- Earn coins and update session count ---
               coins++;
+              localStorage.setItem("pomify_coins", coins);
               coinsSpan.textContent = coins;
-              saveCoins();
+
+              dailyPomodoros++;
+              localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
+              alert(`Pomodoro completed! You earned 1 coin. (${dailyPomodoros}/5 used today)`);
+
+              updateExtraSessionStatus();
 
               if (activeTask) {
                 activeTask.classList.add("done");
@@ -396,18 +442,14 @@
                 activeTask = null;
               }
 
-              // Switch to break automatically
               isWork = false;
               document.getElementById("status").innerHTML = "Break Time!";
               startBtn.disabled = true;
               resetBtn.disabled = true;
               updateDisplay();
 
-              // Start break timer after 3 seconds
               setTimeout(startTimer, 3000);
-            } 
-            // If the break session just ended
-            else {
+            } else {
               isWork = true;
               document.getElementById("status").innerHTML = "Session Complete!";
               startBtn.disabled = false;
@@ -416,15 +458,37 @@
               startBtn.classList.remove("btn-gray");
               startBtn.classList.add("btn-red");
 
-              // Reset display to work time
               let workMinutes = parseInt(document.getElementById("workTime")?.value) || 25;
               timeLeft = workMinutes * 60;
               updateDisplay();
+
+              if (
+                dailyPomodoros >= maxDailyPomodoros && 
+                !extraSessionUsed && 
+                coins > 0
+              ) {
+                alert("Break finished! You have coins — automatically unlocking 1 extra Pomodoro session.");
+                coins--;
+                localStorage.setItem("pomify_coins", coins);
+                coinsSpan.textContent = coins;
+                extraSessionUsed = true;
+                localStorage.setItem("pomify_extraSessionUsed", true);
+                updateExtraSessionStatus();
+
+                // Start extra session automatically
+                setTimeout(() => {
+                  startTimer();
+                }, 2000);
+              } else if (dailyPomodoros >= maxDailyPomodoros && !extraSessionUsed && coins <= 0) {
+                alert("Break finished! You’ve hit the daily limit and have no coins left. Come back tomorrow!");
+                startBtn.disabled = true;
+              }
             }
           }
         }, 1000);
-      }gi
+      }
 
+      // --- Reset Timer Function ---
       function resetTimer() {
         clearInterval(timer);
         isWork = true;
@@ -439,52 +503,22 @@
         startBtn.classList.add("btn-red");
       }
 
+      // --- Add coin button (for testing or rewards) ---
+      addCoinBtn.addEventListener("click", () => {
+        coins++;
+        localStorage.setItem("pomify_coins", coins);
+        coinsSpan.textContent = coins;
+      });
+
+      // --- Keep coins synced live across tabs/pages ---
+      window.addEventListener("storage", (event) => {
+        if (event.key === "pomify_coins") {
+          coins = parseInt(event.newValue) || 0;
+          coinsSpan.textContent = coins;
+        }
+      });
+
       // --- Task System ---
-      function addTask() {
-        const input = document.getElementById("taskInput");
-        const text = input.value.trim();
-        if (!text) return;
-
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <span>${text}</span>
-          <div>
-            <button class="btn btn-sm btn-outline-danger me-1" onclick="removeTask(this)">
-              <i class="bi bi-trash"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-dark" onclick="setActiveTask(this)">
-              <i class="bi bi-hourglass-split"></i>
-            </button>
-          </div>
-        `;
-
-        document.getElementById("taskItems").appendChild(li);
-        input.value = "";
-      }
-
-      function removeTask(btn) {
-        const li = btn.closest("li");
-        if (li === activeTask) activeTask = null;
-        li.remove();
-      }
-
-      function setActiveTask(btn) {
-        document.querySelectorAll("#taskItems li").forEach(li => li.classList.remove("active"));
-        activeTask = btn.closest("li");
-        activeTask.classList.add("active");
-      }
-      
-
-      // --- Load DO tasks from Eisenhower ---
-      function loadTasks() {
-        const savedTasks = JSON.parse(localStorage.getItem("pomify_do_tasks")) || [];
-        const taskList = document.getElementById("taskItems");
-        taskList.innerHTML = "";
-        savedTasks.forEach(text => addTaskToList(text));
-        updateDisplay();
-      }
-
-      // --- Add Task (both UI + localStorage) ---
       function addTask() {
         const input = document.getElementById("taskInput");
         const text = input.value.trim();
@@ -510,7 +544,6 @@
         document.getElementById("taskItems").appendChild(li);
       }
 
-      // --- Remove Task ---
       function removeTask(btn) {
         const li = btn.closest("li");
         if (li === activeTask) activeTask = null;
@@ -518,27 +551,47 @@
         syncToEisenhower();
       }
 
-      // --- Sync Pomodoro tasks back to Eisenhower ---
+      function setActiveTask(btn) {
+        document.querySelectorAll("#taskItems li").forEach(li => li.classList.remove("active"));
+        activeTask = btn.closest("li");
+        activeTask.classList.add("active");
+      }
+
       function syncToEisenhower() {
         const taskTexts = Array.from(document.querySelectorAll("#taskItems li span"))
           .map(span => span.textContent.trim());
         localStorage.setItem("pomify_do_tasks", JSON.stringify(taskTexts));
       }
 
-      // --- Real-time update if Eisenhower changes ---
+      function loadTasks() {
+        const savedTasks = JSON.parse(localStorage.getItem("pomify_do_tasks")) || [];
+        const taskList = document.getElementById("taskItems");
+        taskList.innerHTML = "";
+        savedTasks.forEach(text => addTaskToList(text));
+      }
+
+      // --- Sync tasks across tabs/pages ---
       window.addEventListener("storage", (event) => {
         if (event.key === "pomify_do_tasks") loadTasks();
       });
 
-      // --- On load ---
-      window.onload = loadTasks;
+      // --- Reset daily stats manually or auto (optional) ---
+      function resetDailyStats() {
+        dailyPomodoros = 0;
+        extraSessionUsed = false;
+        localStorage.setItem("pomify_dailyPomodoros", 0);
+        localStorage.setItem("pomify_extraSessionUsed", false);
+        updateExtraSessionStatus();
+      }
 
-      
-
-
-      // initial display
-      updateDisplay();
+      // --- On Page Load ---
+      window.onload = () => {
+        loadTasks();
+        updateDisplay();
+        updateExtraSessionStatus();
+      };
     </script>
+
 
 
 
