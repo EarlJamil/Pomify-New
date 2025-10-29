@@ -373,7 +373,7 @@
     } else if (extraUnlocked && !extraSessionUsed) {
       extraSessionStatus.textContent = "Extra session unlocked! You can use it anytime today.";
     } else {
-      extraSessionStatus.textContent = "Extra session used. Come back tomorrow for another!";
+      extraSessionStatus.textContent = "Extra session used.";
     }
   }
 
@@ -391,36 +391,32 @@
   function startTimer() {
     clearInterval(timer);
 
-    // Block start if extra session already used
-    if (dailyPomodoros > maxDailyPomodoros && extraSessionUsed) {
-      alert("You’ve already used your extra session today. Come back tomorrow!");
-      startBtn.disabled = true;
-      return;
-    }
+   // --- If user already completed 5 Pomodoros ---
+    if (dailyPomodoros >= maxDailyPomodoros) {
+      if (extraSessionUsed) {
+        alert("You’ve already used your extra session today. Come back tomorrow!");
+        startBtn.disabled = true;
+        return;
+      }
 
-    // If max reached but not unlocked yet
-    if (dailyPomodoros >= maxDailyPomodoros && !extraUnlocked && !extraSessionUsed) {
       if (coins > 0) {
-        const useCoin = confirm("All your 5 Pomodoros are done! Use 1 coin to unlock an extra session?");
-        if (useCoin) {
-          coins--;
-          localStorage.setItem("pomify_coins", coins);
-          coinsSpan.textContent = coins;
-          extraUnlocked = true;
-          localStorage.setItem("pomify_extraUnlocked", true);
-          alert("Extra session unlocked! Adjust your times and click Start.");
-          updateExtraSessionStatus();
-        } else {
-          alert("You can still decide later to use a coin for an extra session.");
-          updateExtraSessionStatus();
-          return;
-        }
+        alert("You’ve already completed your 5 Pomodoro sessions. 1 coin will be deducted to start your extra session.");
+        coins--;
+        localStorage.setItem("pomify_coins", coins);
+        coinsSpan.textContent = coins;
+
+        // Mark that the extra session is now being used
+        extraSessionUsed = true;
+        localStorage.setItem("pomify_extraSessionUsed", true);
+        updateExtraSessionStatus();
       } else {
         alert("You’ve reached your daily limit and have no coins left. Come back tomorrow!");
         startBtn.disabled = true;
         return;
       }
     }
+
+
 
     let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
     let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
