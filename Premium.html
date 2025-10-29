@@ -209,7 +209,7 @@
         transform: scale(1.05);
       }
       .welcome-banner {
-        background: linear-gradient(180deg, #b44a4a 0%, #4a001f 100%);
+        background: linear-gradient(180deg, #3f2222 0%, #4a001f 100%);
         border-radius: 20px;
         color: #fff;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -243,6 +243,154 @@
         .welcome-banner .btn {
           width: 100%;
           margin-top: 0.5rem;
+        }
+      }
+       body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+      }
+      .shop-banner {
+        background: linear-gradient(135deg, #87151f, #cf8982);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #7c1414 !important;
+        color: white !important;
+        border: none;
+      }
+      .nav-tabs .nav-link {
+        color: #330f0f;
+        font-weight: 500;
+      }
+      .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+      }
+      .coin-icon {
+        width: 40px;
+        margin-bottom: 10px;
+      }
+      .btn-buy {
+        background-color: #752525;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 20px;
+      }
+      .btn-buy:hover {
+        background-color: #5a1818;
+      }
+      body {
+        font-family: "Arial", sans-serif;
+        background: #fff;
+      }
+      .sidebar {
+        background: #f9f9f9;
+        min-height: 100vh;
+        padding-top: 20px;
+        border-right: 1px solid #ddd;
+      }
+      .sidebar .nav-link {
+        color: #000;
+        font-weight: 500;
+        padding: 10px 20px;
+      }
+      .sidebar .nav-link.active {
+        background: #3b2b29;
+        color: #fff;
+        border-radius: 6px;
+      }
+      .topbar {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 20px;
+      }
+      .search-container {
+        position: relative;
+        width: 250px;
+      }
+      .search-container i {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: #555;
+      }
+      .search-box {
+        width: 100%;
+        padding: 8px 12px 8px 35px;
+        border-radius: 20px;
+        border: none;
+        background-color: #e5e3e4;
+        outline: none;
+      }
+      .currency {
+        background: #eee;
+        color: #a00000;
+        font-weight: bold;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+      }
+      .dashboard-section {
+        padding: 30px;
+      }
+      .welcome {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #a00000;
+      }
+      .card-custom {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+      .card-custom:hover {
+        transform: translateY(-5px);
+      }
+      .red-banner {
+        background: linear-gradient(90deg, #8b0000, #d23a3a);
+        color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+      }
+      .insight-title {
+        color: #a00000;
+        font-weight: bold;
+      }
+      .card-insight {
+        border-radius: 12px;
+        background: #f9f9f9;
+        text-align: center;
+        padding: 25px;
+      }
+      .card-insight i {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+      .card-insight h5 {
+        color: #a00000;
+        font-weight: 600;
+      }
+      @media (max-width: 767.98px) {
+        .topbar {
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .search-container {
+          width: 100%;
+        }
+        .currency {
+          font-size: 12px;
+          padding: 3px 8px;
         }
       }
 
@@ -291,7 +439,7 @@
             <img src="IMAGES/Logo.png" width="30"> Pomify.
           </h4>
           <nav class="nav flex-column">
-            <a class="nav-link active" href="Dashboard.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a class="nav-link" href="Dashboard.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
             <a class="nav-link" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Calendar</a>
             <a class="nav-link" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="true" aria-controls="studyMenu">
               <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
@@ -305,7 +453,7 @@
               <i class="bi bi-credit-card me-2"></i> Shop ▾
             </a>
             <div class="collapse show submenu ps-4" id="subscriptionMenu">
-              <a class="nav-link" href="Premium.html"><i class="bi bi-star-fill me-2"></i>Buy Premium & Coins</a>
+              <a class="nav-link active" href="Premium.html"><i class="bi bi-star-fill me-2"></i>Buy Premium & Coins</a>
             </div>
             <a class="nav-link" href="Settings.html"><i class="bi bi-gear me-2"></i>Settings</a>
           </nav>
@@ -340,88 +488,29 @@
             </div>
           </div>
 
-          <!-- Dashboard Gradient Section -->
-          <div class="dashboard px-4 py-5">
-            <h2 class="fw-bold text-danger mb-4">Welcome!</h2>
+    <!-- Shop Banner -->
+    <div class="shop-banner mb-4">
+      <h2 class="fw-bold">Pomify Shop</h2>
+      <p>Unlock rewards, coins, and premium features to power up your productivity!</p>
+    </div>
 
-            <!-- Gradient Welcome Banner -->
-            <div class="welcome-banner p-4 mb-4">
-              <div class="d-flex justify-content-between align-items-start flex-wrap">
-                <div>
-                  <h5 class="fw-bold text-white mb-2">Pomify.</h5>
-                  <h3 class="fw-bold text-white mb-1">Unlock Your Full Potential</h3>
-                  <p class="text-light mb-3">
-                    Success is built one study session at a time — let Pomify help you make every moment count.
-                  </p>
-                  <button class="btn btn-light fw-semibold me-2">Subscribe Now</button>
-                  <button class="btn btn-outline-light fw-semibold">Learn More</button>
-                </div>
-               
-              </div>
-            </div>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3 justify-content-center" id="shopTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="premium-tab" data-bs-toggle="tab" data-bs-target="#premium" type="button" role="tab">Premium Plans</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="coins-tab" data-bs-toggle="tab" data-bs-target="#coins" type="button" role="tab">Pomi Coins</button>
+      </li>
+    </ul>
 
-            <!-- Daily Insights Section -->
-            <section class="daily-insights my-5">
-              <h4 class="fw-bold text-danger mb-4">
-                <i class="bi bi-lightbulb me-2"></i>Your Daily Insights • Today
-              </h4>
-              
-              <div class="row g-4">
-                <!-- Study Tip -->
-                <div class="col-lg-4 col-md-6">
-                  <div class="insight-card enhanced p-4 rounded text-white h-100">
-                    <div class="d-flex align-items-center mb-3">
-                      <div class="icon-circle me-3">
-                        <i class="bi bi-journal-text fs-3"></i>
-                      </div>
-                      <h5 class="fw-bold mb-0">Today’s Study Tip</h5>
-                    </div>
-                    <p class="mb-3">
-                       Break large goals into smaller steps and reward yourself after each Pomodoro.
-                    </p>
-                    <a href="Eisenhower copy.html" class="btn btn-light text-danger fw-semibold btn-sm mt-4">Do it now!</a>
-                  </div>
-                </div>
+    <!-- Tab Contents -->
+    <div class="tab-content" id="shopTabsContent">
 
-                <!-- Study Now -->
-                <div class="col-lg-4 col-md-6">
-                  <div class="insight-card enhanced p-4 rounded text-white h-100">
-                    <div class="d-flex align-items-center mb-3">
-                      <div class="icon-circle me-3">
-                        <i class="bi bi-alarm fs-3"></i>
-                      </div>
-                      <h5 class="fw-bold mb-0">Study Now</h5>
-                    </div>
-                    <p class="mb-3">
-                      Ready to boost productivity? Start your <strong>Pomodoro</strong> session and focus deeply for 25 minutes.
-                    </p>
-                    <a href="Pomodoro.html" class="btn btn-light text-danger fw-semibold btn-sm mt-2">Start Pomodoro</a>
-                  </div>
-                </div>
+    </div>
 
-                <!-- Log Your Tasks -->
-                <div class="col-lg-4 col-md-6">
-                  <div class="insight-card enhanced p-4 rounded text-white h-100">
-                    <div class="d-flex align-items-center mb-3">
-                      <div class="icon-circle me-3">
-                        <i class="bi bi-list-check fs-3"></i>
-                      </div>
-                      <h5 class="fw-bold mb-0">Log Your Tasks</h5>
-                    </div>
-                    <p class="mb-3">
-                      Track your goals, monitor progress, and visualize your daily achievements with ease.
-                    </p>
-                    <a href="TaskManagement.html" class="btn btn-light text-danger fw-semibold btn-sm mt-4">View Tasks</a>
-                  </div>
-                </div>
-              </div>
-            </section>
+      
 
-          </div>
-
-            </div>
-          </div>
-        </div>
 
 
     <script>
