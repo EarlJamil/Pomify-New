@@ -328,21 +328,78 @@
 
         new MutationObserver(positionDeleteBtn).observe(div, { attributes: true, attributeFilter: ["style"] });
       }
+      // --- PDF Save Limits ---
+      let dailySaves = parseInt(localStorage.getItem("mindmap_dailySaves")) || 0;
+      const maxFreeSaves = 2;
+      let extraSaveUsed = JSON.parse(localStorage.getItem("mindmap_extraSaveUsed")) || false;
+
+      // --- Coins Sync from LocalStorage ---
+      let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
+      const coinsSpan = document.getElementById("coins");
+
+      // --- Show coins on screen if element exists ---
+      if (coinsSpan) coinsSpan.textContent = coins;
+
+      // --- Daily Reset for Save Limits ---
+      const today = new Date().toDateString();
+      const lastSaveDate = localStorage.getItem("mindmap_lastSaveDate");
+
+      if (lastSaveDate !== today) {
+        dailySaves = 0;
+        extraSaveUsed = false;
+        localStorage.setItem("mindmap_lastSaveDate", today);
+        localStorage.setItem("mindmap_dailySaves", 0);
+        localStorage.setItem("mindmap_extraSaveUsed", false);
+      }
+
 
       // Save as PDF
       document.getElementById("saveBtn").addEventListener("click", async () => {
-        const { jsPDF } = window.jspdf;
-        document.querySelectorAll(".delete-btn").forEach(d => d.style.display = "none");
-        document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "none");
+      // --- Check free save limit ---
+      if (dailySaves >= maxFreeSaves) {
+        if (!extraSaveUsed) {
+          if (coins > 0) {
+            const useCoin = confirm("You’ve reached your 2 free PDF saves today. Use 1 coin to save another?");
+            if (useCoin) {
+              coins--;
+              localStorage.setItem("pomify_coins", coins);
+              if (coinsSpan) coinsSpan.textContent = coins;
 
-        const canvasImage = await html2canvas(area);
-        document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "1px dashed #a00000");
+              extraSaveUsed = true;
+              localStorage.setItem("mindmap_extraSaveUsed", true);
+              alert("1 coin deducted. Proceeding to save your PDF.");
+            } else {
+              alert("PDF save canceled.");
+              return;
+            }
+          } else {
+            alert("You’ve used all your free saves and have no coins left. Come back tomorrow!");
+            return;
+          }
+        } else {
+          alert("You’ve already used your extra PDF save today. Come back tomorrow!");
+          return;
+        }
+      }
 
-        const imgData = canvasImage.toDataURL("image/png");
-        const pdf = new jsPDF("l", "pt", [canvas.width, canvas.height]);
-        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-        pdf.save("MindMap.pdf");
-      });
+      // --- Proceed to Save as PDF ---
+      const { jsPDF } = window.jspdf;
+      document.querySelectorAll(".delete-btn").forEach(d => d.style.display = "none");
+      document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "none");
+
+      const canvasImage = await html2canvas(area);
+      document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "1px dashed #a00000");
+
+      const imgData = canvasImage.toDataURL("image/png");
+      const pdf = new jsPDF("l", "pt", [canvas.width, canvas.height]);
+      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+      pdf.save("MindMap.pdf");
+
+      // --- Update counters ---
+      dailySaves++;
+      localStorage.setItem("mindmap_dailySaves", dailySaves);
+    });
+
     </script>
     <script src="JS/CoinsUpdate.js"></script>
   </body>
