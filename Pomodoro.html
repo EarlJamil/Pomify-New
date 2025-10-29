@@ -503,12 +503,7 @@
         startBtn.classList.add("btn-red");
       }
 
-      // --- Add coin button (for testing or rewards) ---
-      addCoinBtn.addEventListener("click", () => {
-        coins++;
-        localStorage.setItem("pomify_coins", coins);
-        coinsSpan.textContent = coins;
-      });
+      
 
       // --- Keep coins synced live across tabs/pages ---
       window.addEventListener("storage", (event) => {
