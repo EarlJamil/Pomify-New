@@ -127,6 +127,16 @@
         font-size: 14px;
       }
 
+      .info-row .form-select {
+      min-width: 150px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      padding: 4px 8px;
+      font-weight: 600;
+      color: #a00000;
+      }
+
       @media (max-width: 767.98px) {
         .topbar {
           flex-wrap: wrap;
@@ -169,8 +179,12 @@
               <a class="nav-link d-flex align-items-center" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
               <a class="nav-link d-flex align-items-center" href="Mind-Mapping.html"><i class="bi bi-diagram-3 me-2"></i> Mind Mapping</a>
             </div>
-            <a class="nav-link" href="Socials.html"><i class="bi bi-file-person me-2"></i>Socials</a>
-            <a class="nav-link " href="Shop.html"><i class="bi bi-credit-card me-2"></i>Shop</a>
+            <a class="nav-link" data-bs-toggle="collapse" href="#subscriptionMenu" role="button" aria-expanded="true" aria-controls="subscriptionMenu">
+              <i class="bi bi-credit-card me-2"></i> Shop ▾
+            </a>
+            <div class="collapse show submenu ps-4" id="subscriptionMenu">
+              <a class="nav-link" href="Premium.html"><i class="bi bi-star-fill me-2"></i>Buy Premium & Coins</a>
+            </div>
             <a class="nav-link d-flex align-items-center" href="Settings.html"><i class="bi bi-gear me-2"></i> Settings</a>
           </nav>
         </div>
@@ -192,8 +206,12 @@
               <a class="nav-link" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i>Eisenhower Matrix</a>
               <a class="nav-link" href="Mind-Mapping.html"><i class="bi bi-diagram-3 me-2"></i>Mind Mapping</a>
             </div>
-            <a class="nav-link" href="Socials.html"><i class="bi bi-file-person me-2"></i>Socials</a>
-            <a class="nav-link " href="Shop.html"><i class="bi bi-credit-card me-2"></i>Shop</a>
+            <a class="nav-link" data-bs-toggle="collapse" href="#subscriptionMenu" role="button" aria-expanded="true" aria-controls="subscriptionMenu">
+              <i class="bi bi-credit-card me-2"></i> Shop ▾
+            </a>
+            <div class="collapse show submenu ps-4" id="subscriptionMenu">
+              <a class="nav-link" href="Premium.html"><i class="bi bi-star-fill me-2"></i>Buy Premium & Coins</a>
+            </div>
             <a class="nav-link active" href="Settings.html"><i class="bi bi-gear me-2"></i>Settings</a>
           </nav>
         </div>
@@ -212,7 +230,7 @@
                 <span class="currency d-flex align-items-center gap-1 px-2 py-1 rounded">
                   <img src="IMAGES/Coin Icon.png" alt="coin" style="width:18px; height:18px;">
                   <span id="coins">0</span>
-                  <button id="addCoinBtn" class="btn btn-sm p-0" style="width:22px; height:22px;" title="Add coin">+</button>
+                    <a href="Premium.html" id="addCoinBtn" class="btn btn-sm p-0 d-flex justify-content-center align-items-center text-decoration-none" style="width:22px; height:22px; background:none; color:#a00000; font-weight:bold;" title="Add coin">+</a>
                 </span>
               </div>
               <img src="IMAGES/User Profile.png" width="30">
@@ -231,7 +249,7 @@
                   <p class="mb-0 fw-semibold text-dark">Level up with Pomify Premium</p>
                   <small class="text-secondary">Unlock exclusive tools and features to enhance productivity.</small>
                 </div>
-                <button class="btn btn-danger px-3 py-1">Upgrade Now</button>
+                <a href="Premium.html" class="btn btn-danger px-3 py-1">Upgrade Now</a>
               </div>
             </div>
 
@@ -276,19 +294,18 @@
             <div class="settings-section mb-3">
               <h5 class="fw-bold mb-2 text-danger">Appearance</h5>
               <div class="p-3 border rounded bg-white">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="text-secondary">Theme</span>
+                <div class="info-row d-flex justify-content-between align-items-center">
+                  <p class="text-secondary mb-0">Theme</p>
                   <select class="form-select w-auto border-0 shadow-none text-danger fw-semibold">
                     <option>Light</option>
                     <option>Dark</option>
-                    <option>Auto</option>
                   </select>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <span class="text-secondary">Language</span>
+                <div class="info-row d-flex justify-content-between align-items-center">
+                  <p class="text-secondary mb-0">Language</p>
                   <select class="form-select w-auto border-0 shadow-none text-danger fw-semibold">
-                    <option>English (US)</option>
-                    <option>Filipino</option>
+                    <option>English</option>
+                    <option>Tagalog</option>
                   </select>
                 </div>
               </div>
