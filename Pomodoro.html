@@ -339,154 +339,173 @@
         </div>
       </div>
     </div>
- <script>
-  // --- Timer & Task variables ---
-  let timer;
-  let isWork = true;
-  let timeLeft = 25 * 60;
-  let activeTask = null;
+  <script>
+    // --- Timer & Task variables ---
+    let timer;
+    let isWork = true;
+    let timeLeft = 25 * 60;
+    let activeTask = null;
 
-  // --- Coins & Mechanics (Persistent via localStorage) ---
-  let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
-  let dailyPomodoros = parseInt(localStorage.getItem("pomify_dailyPomodoros")) || 0;
-  const maxDailyPomodoros = 5;
-  let extraSessionUsed = JSON.parse(localStorage.getItem("pomify_extraSessionUsed")) || false;
-  let extraUnlocked = JSON.parse(localStorage.getItem("pomify_extraUnlocked")) || false;
+    // --- Coins & Mechanics (Persistent via localStorage) ---
+    let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
+    let dailyPomodoros = parseInt(localStorage.getItem("pomify_dailyPomodoros")) || 0;
+    const maxDailyPomodoros = 5;
+    let extraSessionUsed = JSON.parse(localStorage.getItem("pomify_extraSessionUsed")) || false;
+    let extraUnlocked = JSON.parse(localStorage.getItem("pomify_extraUnlocked")) || false;
 
-  const startBtn = document.getElementById("startBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const coinsSpan = document.getElementById("coins");
-  const alarm = document.getElementById("alarm");
-  const extraSessionStatus = document.getElementById("extraSessionStatus");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const coinsSpan = document.getElementById("coins");
+    const alarm = document.getElementById("alarm");
+    const extraSessionStatus = document.getElementById("extraSessionStatus");
 
-  // --- Initialize display ---
-  coinsSpan.textContent = coins;
-  updateExtraSessionStatus();
-  updateDisplay();
+    // --- Initialize display ---
+    coinsSpan.textContent = coins;
+    updateExtraSessionStatus();
+    updateDisplay();
 
-  // --- Helper: Update session status text ---
-  function updateExtraSessionStatus() {
-    if (dailyPomodoros < maxDailyPomodoros) {
-      extraSessionStatus.textContent = `Pomodoros used today: ${dailyPomodoros}/5`;
-    } else if (!extraSessionUsed && !extraUnlocked) {
-      extraSessionStatus.textContent = "You’ve reached 5 Pomodoros. Use 1 coin to unlock an extra session.";
-    } else if (extraUnlocked && !extraSessionUsed) {
-      extraSessionStatus.textContent = "Extra session unlocked! You can use it anytime today.";
-    } else {
-      extraSessionStatus.textContent = "Extra session used.";
+    // --- Helper: Update session status text ---
+    function updateExtraSessionStatus() {
+      if (dailyPomodoros < maxDailyPomodoros) {
+        extraSessionStatus.textContent = `Pomodoros used today: ${dailyPomodoros}/5`;
+      } else if (!extraSessionUsed && !extraUnlocked) {
+        extraSessionStatus.textContent = "You’ve reached 5 Pomodoros. Use 1 coin to unlock an extra session.";
+      } else if (extraUnlocked && !extraSessionUsed) {
+        extraSessionStatus.textContent = "Extra session unlocked! You can use it anytime today.";
+      } else {
+        extraSessionStatus.textContent = "Extra session used.";
+      }
     }
-  }
 
-  // --- Timer display ---
-  function updateDisplay() {
-    let minutes = Math.floor(timeLeft / 60);
-    let seconds = timeLeft % 60;
-    document.getElementById("time").innerHTML =
-      (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-    document.title =
-      (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " Pomodoro";
-  }
+    // --- Timer display ---
+    function updateDisplay() {
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+      document.getElementById("time").innerHTML =
+        (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+      document.title =
+        (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " Pomodoro";
+    }
 
   // --- Start Timer Function ---
-  function startTimer() {
-    clearInterval(timer);
+function startTimer() {
+  clearInterval(timer);
 
-   // --- If user already completed 5 Pomodoros ---
-    if (dailyPomodoros >= maxDailyPomodoros) {
-      if (extraSessionUsed) {
-        alert("You’ve already used your extra session today. Come back tomorrow!");
-        startBtn.disabled = true;
-        return;
-      }
+  // --- Handle extra session start ---
+  if (dailyPomodoros >= maxDailyPomodoros) {
+    // if user already used extra session
+    if (extraSessionUsed) {
+      alert("You’ve already used your extra session today. Come back tomorrow!");
+      startBtn.disabled = true;
+      return;
+    }
 
+    // if extra session is unlocked and not yet used
+    if (extraUnlocked && !extraSessionUsed) {
       if (coins > 0) {
-        alert("You’ve already completed your 5 Pomodoro sessions. 1 coin will be deducted to start your extra session.");
+        alert("Starting your extra session will deduct 1 coin.");
         coins--;
         localStorage.setItem("pomify_coins", coins);
         coinsSpan.textContent = coins;
 
-        // Mark that the extra session is now being used
         extraSessionUsed = true;
         localStorage.setItem("pomify_extraSessionUsed", true);
         updateExtraSessionStatus();
+        // continue to timer start (don’t return)
       } else {
-        alert("You’ve reached your daily limit and have no coins left. Come back tomorrow!");
-        startBtn.disabled = true;
+        alert("You’ve unlocked the extra session, but you don’t have any coins left!");
         return;
       }
     }
 
-
-
-    let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
-    let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
-
-    timeLeft = isWork ? workMinutes * 60 : breakMinutes * 60;
-    updateDisplay();
-
-    startBtn.disabled = true;
-    resetBtn.disabled = false;
-    document.getElementById("status").innerHTML = isWork ? "Work Session" : "Break Time!";
-
-    timer = setInterval(function () {
-      if (timeLeft > 0) {
-        timeLeft--;
-        updateDisplay();
+    // if extra not unlocked yet
+    if (!extraUnlocked && !extraSessionUsed) {
+      // allow break after 5th pomodoro to finish normally
+      if (!isWork) {
+        // still in 5th break, allow it
       } else {
-        clearInterval(timer);
-        alarm.play();
+        alert("You’ve already completed your 5 Pomodoro sessions. Wait until the break ends to unlock your extra session.");
+        return;
+      }
+    }
+  }
 
-        if (isWork) {
-          // --- Work session ends ---
-          coins++;
-          localStorage.setItem("pomify_coins", coins);
-          coinsSpan.textContent = coins;
+  // --- Timer setup ---
+  let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
+  let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
 
-          dailyPomodoros++;
-          localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
+  timeLeft = isWork ? workMinutes * 60 : breakMinutes * 60;
+  updateDisplay();
+
+  startBtn.disabled = true;
+  resetBtn.disabled = false;
+  document.getElementById("status").innerHTML = isWork ? "Work Session" : "Break Time!";
+
+  // --- Timer loop ---
+  timer = setInterval(function () {
+    if (timeLeft > 0) {
+      timeLeft--;
+      updateDisplay();
+    } else {
+      clearInterval(timer);
+      alarm.play();
+
+      if (isWork) {
+        // --- Work session ends ---
+        coins++;
+        localStorage.setItem("pomify_coins", coins);
+        coinsSpan.textContent = coins;
+
+        dailyPomodoros++;
+        localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
+        updateExtraSessionStatus();
+
+        // --- Automatically start break, even after 5th Pomodoro ---
+        isWork = false;
+        let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
+        timeLeft = breakMinutes * 60;
+        document.getElementById("status").innerHTML = "Break Time!";
+        updateDisplay();
+
+        // ✅ Always start the break automatically
+        setTimeout(startTimer, 1000);
+      } else {
+        // --- Break session ends ---
+        isWork = true;
+
+        // ✅ Unlock extra session after the *5th break ends*
+        if (dailyPomodoros === maxDailyPomodoros && !extraUnlocked && !extraSessionUsed) {
+          alert("🎉 You’ve completed all 5 Pomodoros today! You can now use 1 coin for an extra session.");
+          extraUnlocked = true;
+          localStorage.setItem("pomify_extraUnlocked", true);
           updateExtraSessionStatus();
+          startBtn.disabled = false;
+        }
+        // ✅ Extra session completed
+        else if (dailyPomodoros > maxDailyPomodoros && extraSessionUsed) {
+          alert("Extra session completed! Great job today!");
+          extraUnlocked = false;
+          localStorage.setItem("pomify_extraUnlocked", false);
+          updateExtraSessionStatus();
+          startBtn.disabled = true;
+        }
+        // ✅ Normal next Pomodoro
+        else {
+          document.getElementById("status").innerHTML = "Ready for next session!";
+          startBtn.disabled = false;
+          resetBtn.disabled = true;
 
-          // --- Start break automatically ---
-          isWork = false;
-          let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
-          timeLeft = breakMinutes * 60;
-          document.getElementById("status").innerHTML = "Break Time!";
+          let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
+          timeLeft = workMinutes * 60;
           updateDisplay();
-          setTimeout(startTimer, 1000); // auto-start break
-        } else {
-          // --- Break session ends ---
-          isWork = true;
-
-          // ✅ After the 5th break ends
-          if (dailyPomodoros === maxDailyPomodoros && !extraUnlocked && !extraSessionUsed) {
-            alert("Your 5 Pomodoros are done! You can use 1 coin for an extra session today.");
-            startBtn.disabled = false;
-            updateExtraSessionStatus();
-          } 
-          // ✅ If user is doing their extra session
-          else if (dailyPomodoros > maxDailyPomodoros && extraUnlocked && !extraSessionUsed) {
-            alert("Extra session completed! Great job today!");
-            extraSessionUsed = true;
-            localStorage.setItem("pomify_extraSessionUsed", true);
-            extraUnlocked = false;
-            localStorage.setItem("pomify_extraUnlocked", false);
-            updateExtraSessionStatus();
-            startBtn.disabled = true;
-          } 
-          else {
-            // --- Normal next work session ---
-            document.getElementById("status").innerHTML = "Ready for next session!";
-            startBtn.disabled = false;
-            resetBtn.disabled = true;
-
-            let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
-            timeLeft = workMinutes * 60;
-            updateDisplay();
-          }
         }
       }
-    }, 1000);
-  }
+    }
+  }, 1000);
+}
+
+
+
 
   // --- Reset Timer Function ---
   function resetTimer() {
