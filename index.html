@@ -3,435 +3,193 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pomify Dashboard</title>
+    <title>Pomify | Unlock Your Full Potential</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
     <style>
       body {
-        font-family: "Arial", sans-serif;
-        background: #fff;
-      }
-      .sidebar {
-        background: #f9f9f9;
-        min-height: 100vh;
-        padding-top: 20px;
-        border-right: 1px solid #ddd;
-      }
-      .sidebar .nav-link {
-        color: #000;
-        font-weight: 500;
-        padding: 10px 20px;
-      }
-      .sidebar .nav-link.active {
-        background: #3b2b29;
-        color: #fff;
-        border-radius: 6px;
-      }
-      .topbar {
-        border-bottom: 1px solid #ddd;
-        padding: 10px 20px;
-      }
-      .search-container {
-        position: relative;
-        width: 250px;
-      }
-      .search-container i {
-        position: absolute;
-        top: 50%;
-        left: 12px;
-        transform: translateY(-50%);
-        color: #555;
-      }
-      .search-box {
-        width: 100%;
-        padding: 8px 12px 8px 35px;
-        border-radius: 20px;
-        border: none;
-        background-color: #e5e3e4;
-        outline: none;
-      }
-      .currency {
-        background: #eee;
-        color: #a00000;
-        font-weight: bold;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 14px;
-      }
-      .dashboard-section {
-        padding: 30px;
-      }
-      .welcome {
-        font-size: 1.8rem;
-        font-weight: bold;
-        color: #a00000;
-      }
-      .card-custom {
-        border-radius: 15px;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
-      }
-      .card-custom:hover {
-        transform: translateY(-5px);
-      }
-      .red-banner {
-        background: linear-gradient(90deg, #8b0000, #d23a3a);
-        color: #fff;
-        padding: 30px;
-        border-radius: 15px;
-      }
-      .insight-title {
-        color: #a00000;
-        font-weight: bold;
-      }
-      .card-insight {
-        border-radius: 12px;
-        background: #f9f9f9;
-        text-align: center;
-        padding: 25px;
-      }
-      .card-insight i {
-        font-size: 40px;
-        margin-bottom: 10px;
-      }
-      .card-insight h5 {
-        color: #a00000;
-        font-weight: 600;
-      }
-      @media (max-width: 767.98px) {
-        .topbar {
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .search-container {
-          width: 100%;
-        }
-        .currency {
-          font-size: 12px;
-          padding: 3px 8px;
-        }
-      }
-      .dashboard-section {
-        background: #cdbebe;
-        color: #fff;
-        min-height: 100vh;
-        padding-top: 40px;
-      }
-
-      .dashboard-card {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 30px;
-        width: 70%;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(6px);
-      }
-
-      .info-card {
-        background: #fff;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        transition: 0.3s;
-      }
-      .info-card:hover {
-        transform: translateY(-5px);
-      }
-      .dashboard {
+        font-family: 'Poppins', sans-serif;
         background-color: #fff;
-        min-height: 100vh;
+        margin: 0;
+        padding: 0;
       }
 
-      .welcome-banner {
-        background: linear-gradient(180deg, #b44a4a 0%, #4a001f 100%);
-        border-radius: 20px;
-        color: #fff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      /* Navbar */
+      .navbar {
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 1rem 3rem;
       }
 
-      .insight-card {
-        background: #a00000;
-        border-radius: 20px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-        transition: transform 0.2s ease;
-      }
-      .insight-card:hover {
-        transform: translateY(-5px);
-      }
-
-      a {
-        color: white;
-        text-decoration: none;
-      }
-      .daily-insights {
-        background: linear-gradient(180deg, #fff7f7 0%, #ffeaea 100%);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 5px 15px rgba(160, 0, 0, 0.1);
-      }
-
-      .insight-card.enhanced {
-        background: linear-gradient(145deg, #b44a4a, #6e0018);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        position: relative;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .insight-card.enhanced:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 20px rgba(160, 0, 0, 0.3);
-      }
-
-      .icon-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
+      .navbar-brand {
+        font-weight: 600;
+        color: #c62828 !important;
+        font-size: 1.6rem;
         display: flex;
         align-items: center;
-        justify-content: center;
-        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
       }
 
-      .insight-card.enhanced p {
-        font-size: 0.95rem;
-        color: #f7eaea;
+      .navbar-brand img {
+        width: 38px;
+        margin-right: 10px;
       }
 
-      .insight-card.enhanced button,
-      .insight-card.enhanced a {
-        border-radius: 25px;
-        transition: all 0.2s ease-in-out;
+      .btn-start {
+        background-color: #e44a4a;
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 8px 18px;
+        text-decoration: none;
       }
 
-      .insight-card.enhanced button:hover,
-      .insight-card.enhanced a:hover {
-        transform: scale(1.05);
-      }
-      .welcome-banner {
-        background: linear-gradient(180deg, #b44a4a 0%, #4a001f 100%);
-        border-radius: 20px;
+      .btn-start:hover {
+        background-color: #c62828;
         color: #fff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        text-align: left;
       }
 
-      /* Responsive Fixes for Welcome Banner */
-      @media (max-width: 991.98px) {
-        .welcome-banner h3 {
+      /* Banners container */
+      .banner-container {
+        width: 100%;
+        padding: 30px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+      }
+
+      /* Welcome Banner */
+      .welcome-banner {
+        background: linear-gradient(180deg, #e44a4a, #611b3b);
+        color: white;
+        text-align: center;
+        border-radius: 30px;
+        padding: 80px 25px;
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .welcome-banner h1 {
+        font-size: 3rem;
+        font-weight: 700;
+      }
+
+      .welcome-banner p {
+        font-size: 1rem;
+        color: #f8f8f8;
+        margin-top: 15px;
+      }
+
+      .btn-subscribe {
+        background-color: #fff;
+        color: #000;
+        border-radius: 50px;
+        font-weight: 600;
+        padding: 12px 28px;
+        margin-top: 25px;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-subscribe:hover {
+        background-color: #f2f2f2;
+      }
+
+      .learn-link {
+        color: white;
+        font-weight: 600;
+        margin-left: 20px;
+        text-decoration: underline;
+      }
+
+      /* Info Banner */
+      .info-banner {
+        background: linear-gradient(180deg, #ef5350, #c62828);
+        color: white;
+        text-align: center;
+        border-radius: 30px;
+        padding: 70px 25px;
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .info-banner h2 {
+        font-size: 2.2rem;
+        font-weight: 700;
+      }
+
+      .info-banner p {
+        font-size: 1rem;
+        color: #f8f8f8;
+        margin-top: 10px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 20px;
+        color: #555;
+        font-size: 0.9rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 1rem 1.5rem;
+        }
+
+        .welcome-banner h1 {
+          font-size: 2rem;
+        }
+
+        .info-banner h2 {
           font-size: 1.5rem;
         }
-        .welcome-banner p {
-          font-size: 0.95rem;
+
+        .btn-subscribe, .learn-link {
+          display: block;
+          margin: 10px auto;
         }
       }
-
-      @media (max-width: 767.98px) {
-        .welcome-banner {
-          text-align: center;
-          padding: 2rem 1.5rem;
-        }
-        .welcome-banner h3 {
-          font-size: 1.3rem;
-        }
-        .welcome-banner h5 {
-          font-size: 1rem;
-        }
-        .welcome-banner p {
-          font-size: 0.9rem;
-        }
-        .welcome-banner .btn {
-          width: 100%;
-          margin-top: 0.5rem;
-        }
-      }
-
-
-
     </style>
   </head>
-
   <body>
-    <div class="container-fluid">
-      <!-- Offcanvas (Mobile Sidebar) -->
-      <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title text-danger fw-bold" id="mobileSidebarLabel">
-            <img src="IMAGES/Logo.png" width="30"> Pomify.
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-          <nav class="nav flex-column">
-            <a class="nav-link d-flex align-items-center active" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link d-flex align-items-center" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Calendar</a>
-            <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#studyMenuMobile" role="button" aria-expanded="false" aria-controls="studyMenuMobile">
-              <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
-            </a>
-            <div class="collapse show submenu ps-4" id="studyMenuMobile">
-              <a class="nav-link d-flex align-items-center" href="Pomodoro.html"><i class="bi bi-clock me-2"></i> Pomodoro</a>
-              <a class="nav-link d-flex align-items-center" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i> Eisenhower Matrix</a>
-              <a class="nav-link d-flex align-items-center" href="Mind-Mapping.html"><i class="bi bi-diagram-3 me-2"></i> Mind Mapping</a>
-            </div>
-            <a class="nav-link" data-bs-toggle="collapse" href="#subscriptionMenu" role="button" aria-expanded="true" aria-controls="subscriptionMenu">
-              <i class="bi bi-credit-card me-2"></i> Subscriptions ▾
-            </a>
-            <div class="collapse show submenu ps-4" id="subscriptionMenu">
-              <a class="nav-link" href="Premium.html"><i class="bi bi-star-fill me-2"></i>Buy Premium</a>
-              <a class="nav-link" href="PomiCoins.html"><i class="bi bi-coin me-2"></i>Buy PomiCoins</a>
-            </div>
-            <a class="nav-link d-flex align-items-center" href="Settings.html"><i class="bi bi-gear me-2"></i> Settings</a>
-          </nav>
+    <!-- Navbar -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="#">
+        <img src="IMAGES/Logo.png" alt="Pomify Logo"> Pomify.
+      </a>
+      <div>
+        <a href="#" class="text-dark fw-semibold me-3 text-decoration-none">Sign In</a>
+        <a href="Dashboard.html" class="btn-start">Start for Free</a>
+      </div>
+    </nav>
+
+    <!-- Main Banner Section -->
+    <div class="banner-container">
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <h1>Unlock Your Full Potential</h1>
+        <p>Success is built one study session at a time—let Pomify help you make every moment count.</p>
+        <div>
+          <a href="#" class="btn-subscribe">Subscribe Now</a>
+          <a href="#" class="learn-link">Learn More</a>
         </div>
       </div>
 
-      <div class="row">
-        <!-- Sidebar (Desktop) -->
-        <div class="col-3 col-md-2 sidebar d-none d-md-block">
-          <h4 class="px-3 mb-4 text-danger fw-bold">
-            <img src="IMAGES/Logo.png" width="30"> Pomify.
-          </h4>
-          <nav class="nav flex-column">
-            <a class="nav-link active" href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a class="nav-link" href="TaskManagement.html"><i class="bi bi-list-task me-2"></i> Calendar</a>
-            <a class="nav-link" data-bs-toggle="collapse" href="#studyMenu" role="button" aria-expanded="true" aria-controls="studyMenu">
-              <i class="bi bi-journal-text me-2"></i> Study Techniques ▾
-            </a>
-            <div class="collapse show submenu ps-4" id="studyMenu">
-              <a class="nav-link " href="Pomodoro.html"><i class="bi bi-clock me-2"></i>Pomodoro</a>
-              <a class="nav-link" href="Eisenhower.html"><i class="bi bi-grid-3x3-gap me-2"></i>Eisenhower Matrix</a>
-              <a class="nav-link" href="Mind-Mapping.html"><i class="bi bi-diagram-3 me-2"></i>Mind Mapping</a>
-            </div>
-            <a class="nav-link" data-bs-toggle="collapse" href="#subscriptionMenu" role="button" aria-expanded="true" aria-controls="subscriptionMenu">
-              <i class="bi bi-credit-card me-2"></i> Subscriptions ▾
-            </a>
-            <div class="collapse show submenu ps-4" id="subscriptionMenu">
-              <a class="nav-link" href="Premium.html"><i class="bi bi-star-fill me-2"></i>Buy Premium</a>
-              <a class="nav-link" href="PomiCoins.html"><i class="bi bi-coin me-2"></i>Buy PomiCoins</a>
-            </div>
-            <a class="nav-link" href="Settings.html"><i class="bi bi-gear me-2"></i>Settings</a>
-          </nav>
-        </div>
+      <!-- Info Banner -->
+      <div class="info-banner">
+        <h2>Stay Focused, Stay Productive</h2>
+        <p>Pomify combines science-backed focus techniques with a beautiful, distraction-free design to help you stay consistent and motivated every day.</p>
+      </div>
+    </div>
 
-       <!-- Main Content -->
-        <div class="col-12 col-md-10 p-0">
-          <div class="d-block d-md-none text-center my-2">
-            <img src="IMAGES/Logo.png" width="40" class="mb-1">
-            <h2 class="text-danger fw-bold m-0">Pomify.</h2>
-          </div>
-
-          <!-- Topbar -->
-          <div class="d-flex justify-content-between align-items-center topbar flex-wrap">
-            <div></div>
-            <div class="d-flex align-items-center gap-3">
-              <button class="btn btn-outline-dark d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                <i class="bi bi-list"></i>
-              </button>
-              <div class="search-container">
-                <i class="bi bi-search"></i>
-                <input class="search-box" type="search" placeholder="Search">
-              </div>
-              <div class="d-flex align-items-center gap-2">
-                <span class="currency d-flex align-items-center gap-1 px-2 py-1 rounded">
-                  <img src="IMAGES/Coin Icon.png" alt="coin" style="width:18px; height:18px;">
-                  <span id="coins">0</span>
-                  <button id="addCoinBtn" class="btn btn-sm p-0" style="width:22px; height:22px;" title="Add coin">+</button>
-                </span>
-              </div>
-              <img src="IMAGES/User Profile.png" width="30">
-            </div>
-          </div>
-
-          <!-- Dashboard Gradient Section -->
-          <div class="dashboard px-4 py-5">
-            <h2 class="fw-bold text-danger mb-4">Welcome!</h2>
-
-            <!-- Gradient Welcome Banner -->
-            <div class="welcome-banner p-4 mb-4">
-              <div class="d-flex justify-content-between align-items-start flex-wrap">
-                <div>
-                  <h5 class="fw-bold text-white mb-2">Pomify.</h5>
-                  <h3 class="fw-bold text-white mb-1">Unlock Your Full Potential</h3>
-                  <p class="text-light mb-3">
-                    Success is built one study session at a time — let Pomify help you make every moment count.
-                  </p>
-                  <button class="btn btn-light fw-semibold me-2">Subscribe Now</button>
-                  <button class="btn btn-outline-light fw-semibold">Learn More</button>
-                </div>
-               
-              </div>
-            </div>
-
-            <!-- Daily Insights Section -->
-            <section class="daily-insights my-5">
-              <h4 class="fw-bold text-danger mb-4">
-                <i class="bi bi-lightbulb me-2"></i>Your Daily Insights • Today
-              </h4>
-              
-              <div class="row g-4">
-                <!-- Study Tip -->
-                <div class="col-lg-4 col-md-6">
-                  <div class="insight-card enhanced p-4 rounded text-white h-100">
-                    <div class="d-flex align-items-center mb-3">
-                      <div class="icon-circle me-3">
-                        <i class="bi bi-journal-text fs-3"></i>
-                      </div>
-                      <h5 class="fw-bold mb-0">Today’s Study Tip</h5>
-                    </div>
-                    <p class="mb-3">
-                       Break large goals into smaller steps and reward yourself after each Pomodoro.
-                    </p>
-                    <a href="Eisenhower copy.html" class="btn btn-light text-danger fw-semibold btn-sm mt-4">Do it now!</a>
-                  </div>
-                </div>
-
-                <!-- Study Now -->
-                <div class="col-lg-4 col-md-6">
-                  <div class="insight-card enhanced p-4 rounded text-white h-100">
-                    <div class="d-flex align-items-center mb-3">
-                      <div class="icon-circle me-3">
-                        <i class="bi bi-alarm fs-3"></i>
-                      </div>
-                      <h5 class="fw-bold mb-0">Study Now</h5>
-                    </div>
-                    <p class="mb-3">
-                      Ready to boost productivity? Start your <strong>Pomodoro</strong> session and focus deeply for 25 minutes.
-                    </p>
-                    <a href="Pomodoro.html" class="btn btn-light text-danger fw-semibold btn-sm mt-auto">Start Pomodoro</a>
-                  </div>
-                </div>
-
-                <!-- Log Your Tasks -->
-                <div class="col-lg-4 col-md-6">
-                  <div class="insight-card enhanced p-4 rounded text-white h-100">
-                    <div class="d-flex align-items-center mb-3">
-                      <div class="icon-circle me-3">
-                        <i class="bi bi-list-check fs-3"></i>
-                      </div>
-                      <h5 class="fw-bold mb-0">Log Your Tasks</h5>
-                    </div>
-                    <p class="mb-3">
-                      Track your goals, monitor progress, and visualize your daily achievements with ease.
-                    </p>
-                    <a href="TaskManagement.html" class="btn btn-light text-danger fw-semibold btn-sm mt-4">View Tasks</a>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-          </div>
-
-            </div>
-          </div>
-        </div>
-
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const coins = localStorage.getItem("pomify_coins") || 0;
-        document.getElementById("coins").textContent = coins;
-      });
-    </script>
+    <!-- Footer -->
+    <footer>
+      © 2025 Pomify. All Rights Reserved.
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
