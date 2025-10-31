@@ -393,8 +393,49 @@
           padding: 3px 8px;
         }
       }
-
-
+       body {
+        font-family: "Arial", sans-serif;
+        background-color: #f8f9fa;
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #7c1414 !important;
+        color: white !important;
+        border: none;
+      }
+      .nav-tabs .nav-link {
+        color: #330f0f;
+        font-weight: 500;
+      }
+      .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+      }
+      .shop-banner {
+        background: linear-gradient(135deg, #87151f, #cf8982);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+      }
+      .btn-buy {
+        background-color: #752525;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 20px;
+      }
+      .btn-buy:hover {
+        background-color: #5a1818;
+      }
+      #coins {
+        display: block !important;
+        opacity: 1 !important;
+      }
 
     </style>
   </head>
@@ -480,145 +521,139 @@
             </div>
           </div>
 
-    <!-- Shop Banner -->
-    <div class="shop-banner mb-4">
-      <h2 class="fw-bold">Pomify Shop</h2>
-      <p>Unlock rewards, coins, and premium features to power up your productivity!</p>
-    </div>
 
-    <!-- Tabs -->
-    <ul class="nav nav-tabs mb-3 justify-content-center" id="shopTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="premium-tab" data-bs-toggle="tab" data-bs-target="#premium" type="button" role="tab">Premium Plans</button>
-      </li>
-      <!-- <li class="nav-item" role="presentation">
-        <button class="nav-link" id="coins-tab" data-bs-toggle="tab" data-bs-target="#coins" type="button" role="tab">Pomi Coins</button>
-      </li> -->
-    </ul>
+<!-- Shop Banner -->
+      <div class="shop-banner mb-4">
+        <h2 class="fw-bold">Pomify Shop</h2>
+        <p>Unlock rewards, coins, and premium features to power up your productivity!</p>
+      </div>
 
-    <!-- Tab Contents -->
-    <div class="tab-content" id="shopTabsContent">
-    <!-- Premium Plans Tab -->
-            <div class="tab-pane fade show active" id="premium" role="tabpanel">
-              <div class="container py-5">
-                <div class="row justify-content-center align-items-stretch g-4">
+      <!-- Tabs -->
+<ul class="nav nav-tabs mb-3 justify-content-center" id="shopTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="premium-tab" data-bs-toggle="tab" data-bs-target="#premium" type="button" role="tab">Premium Plans</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="coins-tab" data-bs-toggle="tab" data-bs-target="#coinsTab" type="button" role="tab">Pomi Coins</button>
+  </li>
+</ul>
 
-                  <!-- Premium Plus -->
-                  <div class="col-md-5 d-flex">
-                    <div class="card p-4 text-center flex-fill">
-                      <h3 class="fw-bold text-danger mb-3">
-                        <img src="IMAGES/Logo.png" width="35" class="me-1"> Premium+
-                      </h3>
-                      <p class="fs-5 fw-semibold mb-1 text-danger">₱449 / month</p>
-                      <a href="#" class="btn btn-danger px-4 mb-3">5-day free trial</a>
-                      <ul class="text-start list-unstyled small px-3">
-                        <li><i class="bi bi-check-circle-fill text-danger me-2"></i>250 Bonus Coins/month</li>
-                        <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Exclusive Premium Picks</li>
-                        <li><i class="bi bi-check-circle-fill text-danger me-2"></i>No ads</li>
-                        <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Offline access</li>
-                      </ul>
-                      <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" 
-                      data-name="Premium+" data-price="449">Go Premium+</a>
+<!-- Tab Contents -->
+<div class="tab-content" id="shopTabsContent">
 
-                    </div>
-                  </div>
-
-                  <!-- Premium Basic -->
-                  <div class="col-md-5 d-flex">
-                    <div class="card p-4 text-center flex-fill" style="background-color:#f8f5ff;">
-                      <h3 class="fw-bold text-primary mb-3">
-                        <img src="IMAGES/Logo.png" width="35" class="me-1"> Premium
-                      </h3>
-                      <p class="fs-5 fw-semibold mb-1 text-primary">₱299 / month</p>
-                      <a href="#" class="btn btn-outline-primary px-4 mb-3">5-day free trial</a>
-                      <ul class="text-start list-unstyled small px-3">
-                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Exclusive Premium Picks</li>
-                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>No ads</li>
-                        <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Offline access</li>
-                      </ul>
-                      <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" 
-                      data-name="Premium" data-price="299">Go Premium+</a>
-
-                    </div>
-                  </div>
-                </div>
-                
-              </div>
-            </div>
-
-        <section class="container my-5">
-        <h2 class="fw-bold text-center mb-4 text-danger">
-          <img src="IMAGES/Logo.png" width="40" class="me-2">Pomi Coins
-        </h2>
-        <p class="text-center text-muted mb-5">Buy coins to unlock study tools, special features, and customization options.</p>
-
-        <div class="row justify-content-center align-items-stretch g-4">
-          <!-- 100 Coins -->
-          <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
-              <h4 class="fw-bold mb-2">10 Coins</h4>
-              <p class="fs-5 fw-semibold mb-3">₱29</p>
-              <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" 
-   data-name="10 Coins" data-price="29">Buy Now</a>
-            </div>
-          </div>
-
-          <!-- 250 Coins -->
-          <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
-              <h4 class="fw-bold mb-2">50 Coins</h4>
-              <p class="fs-5 fw-semibold mb-3">₱80</p>
-              <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" 
-   data-name="10 Coins" data-price="29">Buy Now</a>
-            </div>
-          </div>
-
-          <!-- 500 Coins -->
-          <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
-              <h4 class="fw-bold mb-2">130 Coins</h4>
-              <p class="fs-5 fw-semibold mb-3">₱159</p>
-              <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" 
-   data-name="10 Coins" data-price="29">Buy Now</a>
-            </div>
-          </div>
-
-          <!-- 1000 Coins -->
-          <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
-              <h4 class="fw-bold mb-2">200 Coins</h4>
-              <p class="fs-5 fw-semibold mb-3">₱249</p>
-              <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" 
-   data-name="10 Coins" data-price="29">Buy Now</a>
-            </div>
+  <!-- Premium Plans Tab -->
+  <div class="tab-pane fade show active" id="premium" role="tabpanel">
+    <div class="container py-5">
+      <div class="row justify-content-center align-items-stretch g-4">
+        <!-- Premium+ Card -->
+        <div class="col-md-5 d-flex">
+          <div class="card p-4 text-center flex-fill">
+            <h3 class="fw-bold text-danger mb-3">
+              <img src="IMAGES/Logo.png" width="35" class="me-1"> Premium+
+            </h3>
+            <p class="fs-5 fw-semibold mb-1 text-danger">₱449 / month</p>
+            <a href="#" class="btn btn-danger px-4 mb-3">5-day free trial</a>
+            <ul class="text-start list-unstyled small px-3">
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>250 Bonus Coins/month</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Exclusive Premium Picks</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>No ads</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Offline access</li>
+            </ul>
+            <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" data-name="Premium+" data-price="449">Go Premium+</a>
           </div>
         </div>
-      </section> 
 
+        <!-- Premium Basic Card -->
+        <div class="col-md-5 d-flex">
+          <div class="card p-4 text-center flex-fill" style="background-color:#f8f5ff;">
+            <h3 class="fw-bold text-primary mb-3">
+              <img src="IMAGES/Logo.png" width="35" class="me-1"> Premium
+            </h3>
+            <p class="fs-5 fw-semibold mb-1 text-primary">₱299 / month</p>
+            <a href="#" class="btn btn-outline-primary px-4 mb-3">5-day free trial</a>
+            <ul class="text-start list-unstyled small px-3">
+              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Exclusive Premium Picks</li>
+              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>No ads</li>
+              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Offline access</li>
+            </ul>
+            <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" data-name="Premium" data-price="299">Go Premium</a>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Pomi Coins Tab -->
+  <div class="tab-pane fade" id="coinsTab" role="tabpanel">
+    <section class="container my-5">
+
+      <div class="row justify-content-center align-items-stretch g-4">
+        <!-- 10 Coins -->
+        <div class="col-md-3 d-flex">
+          <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
+            <h4 class="fw-bold mb-2">10 Coins</h4>
+            <p class="fs-5 fw-semibold mb-3">₱29</p>
+            <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" data-name="10 Coins" data-price="29">Buy Now</a>
+          </div>
+        </div>
+
+        <!-- 50 Coins -->
+        <div class="col-md-3 d-flex">
+          <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
+            <h4 class="fw-bold mb-2">50 Coins</h4>
+            <p class="fs-5 fw-semibold mb-3">₱80</p>
+            <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" data-name="50 Coins" data-price="80">Buy Now</a>
+          </div>
+        </div>
+
+        <!-- 130 Coins -->
+        <div class="col-md-3 d-flex">
+          <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
+            <h4 class="fw-bold mb-2">130 Coins</h4>
+            <p class="fs-5 fw-semibold mb-3">₱159</p>
+            <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" data-name="130 Coins" data-price="159">Buy Now</a>
+          </div>
+        </div>
+
+        <!-- 200 Coins -->
+        <div class="col-md-3 d-flex">
+          <div class="card text-center flex-fill p-4" style="background: linear-gradient(145deg, #b44a4a, #6e0018); color: white;">
+            <h4 class="fw-bold mb-2">200 Coins</h4>
+            <p class="fs-5 fw-semibold mb-3">₱249</p>
+            <a href="#" class="btn btn-light fw-semibold px-4 buy-btn" data-name="200 Coins" data-price="249">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+
+
 
       
 
 
     <script src="JS/CoinsUpdate.js"></script>
-    <script>
-      
-      document.querySelectorAll(".buy-btn").forEach(button => {
-        button.addEventListener("click", (e) => {
-          e.preventDefault(); // Prevent default <a> behavior
-          const name = button.getAttribute("data-name");
-          const price = button.getAttribute("data-price");
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-          // Save product info to localStorage
-          localStorage.setItem("selectedProduct", JSON.stringify({name, price}));
+<script>
+    document.querySelectorAll('.coin-card').forEach(card => {
+    // Only manipulate coin cards
+  });
 
-          // Redirect to Transaction page
-          window.location.href = "Transaction.html";
-        });
+
+    // Buy buttons
+    document.querySelectorAll(".buy-btn").forEach(button => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const name = button.getAttribute("data-name");
+        const price = button.getAttribute("data-price");
+        localStorage.setItem("selectedProduct", JSON.stringify({name, price}));
+        window.location.href = "Transaction.html";
       });
+    });
+</script>
 
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
