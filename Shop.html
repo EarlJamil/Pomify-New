@@ -546,22 +546,6 @@
     <div class="container py-5">
       <div class="row justify-content-center align-items-stretch g-4">
         <!-- Premium+ Card -->
-        <div class="col-md-5 d-flex">
-          <div class="card p-4 text-center flex-fill">
-            <h3 class="fw-bold text-danger mb-3">
-              <img src="IMAGES/Logo.png" width="35" class="me-1"> Premium+
-            </h3>
-            <p class="fs-5 fw-semibold mb-1 text-danger">₱449 / month</p>
-            <a href="#" class="btn btn-danger px-4 mb-3">5-day free trial</a>
-            <ul class="text-start list-unstyled small px-3">
-              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>250 Bonus Coins/month</li>
-              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Exclusive Premium Picks</li>
-              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>No ads</li>
-              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Offline access</li>
-            </ul>
-            <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" data-name="Premium+" data-price="449">Go Premium+</a>
-          </div>
-        </div>
 
         <!-- Premium Basic Card -->
         <div class="col-md-5 d-flex">
@@ -574,11 +558,39 @@
             <ul class="text-start list-unstyled small px-3">
               <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Exclusive Premium Picks</li>
               <li><i class="bi bi-check-circle-fill text-primary me-2"></i>No ads</li>
-              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Offline access</li>
+              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>2x Coins Multiplier</li>
+              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>15 Maximum free pomodoro per day</li>
+              <li><i class="bi bi-check-circle-fill text-primary me-2"></i>Unlimited save in mind mapping</li>
             </ul>
-            <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" data-name="Premium" data-price="299">Go Premium</a>
+            <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" data-name="Premium" data-price="299"
+            data-description="Exclusive Premium Picks, No ads, 2x Coins Multiplier, 15 Maximum free pomodoro per day, Unlimited save in mind mapping"
+            >Go Premium</a>
           </div>
         </div>
+
+        <div class="col-md-5 d-flex">
+          <div class="card p-4 text-center flex-fill">
+            <h3 class="fw-bold text-danger mb-3">
+              <img src="IMAGES/Logo.png" width="35" class="me-1"> Premium+
+            </h3>
+            <p class="fs-5 fw-semibold mb-1 text-danger">₱449 / month</p>
+            <a href="#" class="btn btn-danger px-4 mb-3">5-day free trial</a>
+            <ul class="text-start list-unstyled small px-3">
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>100 Bonus Coins</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Exclusive Premium Picks</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>No ads</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>3x Coins Multiplier</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>20 Maximum free pomodoro per day</li>
+              <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Unlimited save in mind mapping</li>
+            </ul>
+            <a href="#" class="btn btn-dark fw-semibold mt-auto px-4 buy-btn" data-name="Premium+" data-price="449"
+            data-description="100 Bonus Coins, Exclusive Premium Picks, No ads, 3x Coins Multiplier, 20 Maximum free pomodoro per day, Unlimited save in mind mapping"
+            >Go Premium+</a>
+          </div>
+        </div>
+
+
+
       </div>
     </div>
   </div>
@@ -638,22 +650,28 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.querySelectorAll('.coin-card').forEach(card => {
-    // Only manipulate coin cards
-  });
+  // Buy buttons logic
+  document.querySelectorAll(".buy-btn").forEach(button => {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
 
+      const name = button.getAttribute("data-name");
+      const price = button.getAttribute("data-price");
+      const description = button.getAttribute("data-description");
 
-    // Buy buttons
-    document.querySelectorAll(".buy-btn").forEach(button => {
-      button.addEventListener("click", (e) => {
-        e.preventDefault();
-        const name = button.getAttribute("data-name");
-        const price = button.getAttribute("data-price");
-        localStorage.setItem("selectedProduct", JSON.stringify({name, price}));
-        window.location.href = "Transaction.html";
-      });
+      // Store all details in localStorage
+      localStorage.setItem("selectedProduct", JSON.stringify({
+        name, 
+        price,
+        description
+      }));
+
+      // Redirect to transaction page
+      window.location.href = "Transaction.html";
     });
+  });
 </script>
+
 
   </body>
 </html>
