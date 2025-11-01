@@ -79,7 +79,7 @@
     <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
       <div>
         <h5 id="planName" class="mb-1 fw-semibold">[Name]</h5>
-        <p class="mb-0 text-muted small" id="description">1 Premium account</p>
+        <p id="planDescription" class="">tite</p>
         <p>Cancel anytime online.</p>
       </div>
       <h5 id="productPrice" class="price">₱299 / month</h5>
@@ -138,71 +138,72 @@
     </div>
 
     <button class="complete-btn">Complete Purchase</button>
+    
   </div>
 
   <script>
-  // Load product details from localStorage
-  const productData = JSON.parse(localStorage.getItem("selectedProduct"));
-  let basePrice = 299; // default fallback
-  let discounted = false;
+// Load product details from localStorage
+const productData = JSON.parse(localStorage.getItem("selectedProduct"));
+let basePrice = 299; // default fallback
+let discounted = false;
 
-  
-    if (productData) {
-      document.getElementById("planName").textContent = productData.name;
-      document.getElementById("summaryItem").textContent = productData.name;
-      document.getElementById("productPrice").textContent = productData.price;
-      document.getElementById("summaryPrice").textContent = productData.price;
-
-      // Show description
-      document.getElementById("description").textContent = productData.description;
+if (productData) {
+  document.getElementById("planName").textContent = productData.name;
+  document.getElementById("summaryItem").textContent = productData.name;
+  document.getElementById("productPrice").textContent = `₱${productData.price} / month`;
+  document.getElementById("summaryPrice").textContent = `₱${productData.price} / month`;
+  const descElem = document.getElementById("planDescription");
+  if (productData.description) {
+      const features = productData.description.split(",").map(item => item.trim());
+      descElem.innerHTML = "<ul class='mb-2 ps-3'>" + 
+        features.map(f => `<li>${f}</li>`).join("") + 
+        "</ul>";
     }
 
+  basePrice = parseFloat(productData.price); // update base price
+}
 
-  // Apply creator code discount
-  document.getElementById("applyCodeBtn").addEventListener("click", () => {
-    const code = document.getElementById("creatorCode").value.trim();
-    const msg = document.getElementById("codeMessage");
-    const total = document.getElementById("totalPrice");
-    const discountLine = document.getElementById("discountLine");
-    const discountAmountElem = document.getElementById("discountAmount");
+// Apply creator code discount
+document.getElementById("applyCodeBtn").addEventListener("click", () => {
+  const code = document.getElementById("creatorCode").value.trim();
+  const msg = document.getElementById("codeMessage");
+  const total = document.getElementById("totalPrice");
+  const discountLine = document.getElementById("discountLine");
+  const discountAmountElem = document.getElementById("discountAmount");
 
-    msg.classList.remove("text-danger", "text-success");
+  msg.classList.remove("text-danger", "text-success");
+  discountLine.classList.add("d-none");
+  discountLine.classList.remove("d-flex");
+  discounted = false;
 
-    // Reset discount visibility by default
-    discountLine.style.display = "none";
-    discounted = false;
+  // No input — reset everything
+  if (code === "") {
+    msg.textContent = "";
+    total.textContent = `₱${basePrice.toFixed(2)}`;
+    return;
+  }
 
-    // No input — just reset everything
-    if (code === "") {
-      msg.textContent = "";
-      total.textContent = `₱${basePrice.toFixed(2)}`;
-      return;
-    }
+  // Valid code
+  if (code.toLowerCase() === "earlpom") {
+    const discount = basePrice * 0.2;
+    const newTotal = basePrice - discount;
 
-    // Valid code
-    if (code.toLowerCase() === "earlpom") {
-      const discount = basePrice * 0.2;
-      const newTotal = basePrice - discount;
+    total.textContent = `₱${newTotal.toFixed(2)}`;
+    discountAmountElem.textContent = `₱${discount.toFixed(2)}`;
+    discountLine.classList.remove("d-none");
+    discountLine.classList.add("d-flex");
 
-      total.textContent = `₱${newTotal.toFixed(2)}`;
-      discountAmountElem.textContent = `₱${discount.toFixed(2)}`;
-      discountLine.classList.remove("d-none");
-      discountLine.classList.add("d-flex");
-      discountLine.style.display = "flex";
-
-      msg.textContent = "✅ Code applied! 20% discount has been added.";
-      msg.classList.add("text-success");
-      discounted = true;
-    } else {
-      // Invalid code
-      msg.textContent = "❌ Invalid code. Please try again.";
-      msg.classList.add("text-danger");
-      total.textContent = `₱${basePrice.toFixed(2)}`;
-    }
-  });
-
-  
+    msg.textContent = "✅ Code applied! 20% discount has been added.";
+    msg.classList.add("text-success");
+    discounted = true;
+  } else {
+    msg.textContent = "❌ Invalid code. Please try again.";
+    msg.classList.add("text-danger");
+    total.textContent = `₱${basePrice.toFixed(2)}`;
+  }
+});
 </script>
+
 
 </body>
 </html>
