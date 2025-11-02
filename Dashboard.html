@@ -350,7 +350,7 @@
                   <p class="text-light mb-3">
                     Success is built one study session at a time — let Pomify help you make every moment count.
                   </p>
-                  <button class="btn btn-light fw-semibold me-2">Subscribe Now</button>
+                  <button class="btn btn-light fw-semibold me-2" onclick="window.location.href='Shop.html'">Subscribe Now</button>
                   <button class="btn btn-outline-light fw-semibold">Learn More</button>
                 </div>
                
@@ -422,12 +422,53 @@
         </div>
 
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const coins = localStorage.getItem("pomify_coins") || 0;
-        document.getElementById("coins").textContent = coins;
-      });
+   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Get coins
+      const coins = localStorage.getItem("pomify_coins") || 0;
+      document.getElementById("coins").textContent = coins;
+
+      // Get user plan
+      const userPlanRaw = localStorage.getItem("pomify_plan") || "Basic";
+      const userPlan = userPlanRaw.toLowerCase();
+
+      // Target welcome banner elements
+      const welcomeBanner = document.querySelector(".welcome-banner");
+      const heading = welcomeBanner.querySelector("h3");       // "Unlock Your Full Potential"
+      const buttons = welcomeBanner.querySelectorAll("button"); // "Subscribe Now" & "Learn More"
+
+      // Determine plan info
+      let planText = "";
+      let planColor = "";
+
+      if (userPlan.includes("premium+")) {
+        planText = "💎 Premium+ Access";
+        planColor = "#8a2be2"; // purple
+      } else if (userPlan.includes("premium")) {
+        planText = "🌟 Premium Access";
+        planColor = "#1db954"; // green
+      }
+
+      // If user is premium or premium+, hide buttons and change heading
+      if (userPlan.includes("premium")) {
+        buttons.forEach(btn => btn.style.display = "none"); // hide both buttons
+
+        // Replace heading text with plan info
+        heading.textContent = planText;
+
+        // Style heading to look like a badge
+        heading.style.display = "inline-block";
+        heading.style.background = planColor;
+        heading.style.color = "#fff";
+        heading.style.padding = "10px 20px";
+        heading.style.borderRadius = "12px";
+        heading.style.fontWeight = "700";
+        heading.style.fontSize = "1.5rem";
+      }
+    });
     </script>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
