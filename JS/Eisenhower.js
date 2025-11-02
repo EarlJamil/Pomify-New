@@ -46,6 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
     addCoinBtn.style.display = "none";
   }
 
+  // --- Make the + button redirect to shop ---
+  if (addCoinBtn) {
+    addCoinBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = "Shop.html"; // redirect only
+    });
+  }
+
   updateCoinsDisplay();
 });
 
@@ -55,14 +63,6 @@ function updateCoinsDisplay() {
   const coinsEl = document.getElementById("coins");
   if (coinsEl) coinsEl.textContent = coins;
 }
-
-// Add a coin (for testing or rewards)
-document.getElementById("addCoinBtn")?.addEventListener("click", () => {
-  let coins = parseInt(localStorage.getItem("pomify_coins") || "0");
-  coins++;
-  localStorage.setItem("pomify_coins", coins);
-  updateCoinsDisplay();
-});
 
 // === Eisenhower Task Functions ===
 function addTask() {
@@ -185,7 +185,6 @@ function markDone(task) {
     }
   }
 
-  // Proceed marking task as done
   completeTaskNormally(task);
   dailyTasksDone++;
   localStorage.setItem("eisenhower_dailyTasksDone", dailyTasksDone);

@@ -223,7 +223,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <script>
+   <script>
     const canvas = document.getElementById("mindmapCanvas");
     const ctx = canvas.getContext("2d");
     const area = document.getElementById("mindmapArea");
@@ -328,7 +328,11 @@
       // Coin + Save limits
       let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
       const coinsSpan = document.getElementById("coins");
+      const addCoinBtn = document.getElementById("addCoinBtn");
       if (coinsSpan) coinsSpan.textContent = coins;
+
+      // Hide coin button for premium users
+      if (isPremiumUser && addCoinBtn) addCoinBtn.style.display = "none";
 
       let dailySaves = parseInt(localStorage.getItem("mindmap_dailySaves")) || 0;
       let extraSaveUsed = JSON.parse(localStorage.getItem("mindmap_extraSaveUsed")) || false;
@@ -356,47 +360,41 @@
         badge.style.borderRadius = "10px";
         badge.style.marginBottom = "15px";
         badge.style.fontWeight = "600";
+        badge.style.textAlign = "center";
         document.querySelector(".container.py-4.text-center")?.prepend(badge);
       }
 
       // === SAVE BUTTON HANDLER ===
       document.getElementById("saveBtn").addEventListener("click", async () => {
-        // If premium, unlimited saves
         if (isPremiumUser) {
           await saveAsPDF();
           alert("✅ Mind Map saved successfully! (Unlimited saves for Premium users)");
           return;
         }
 
-        // Free user limit
         const maxFreeSaves = 2;
         if (dailySaves >= maxFreeSaves) {
-          if (!extraSaveUsed) {
-            if (coins > 0) {
-              const useCoin = confirm("You’ve reached your 2 free saves today. Use 1 coin to save again?");
-              if (useCoin) {
-                coins--;
-                localStorage.setItem("pomify_coins", coins);
-                if (coinsSpan) coinsSpan.textContent = coins;
-                extraSaveUsed = true;
-                localStorage.setItem("mindmap_extraSaveUsed", true);
-                await saveAsPDF();
-                alert("✅ Mind Map saved using 1 coin!");
-              } else return;
-            } else {
-              alert("❌ No coins left. Come back tomorrow or upgrade to Premium for unlimited saves.");
-              return;
+          if (!extraSaveUsed && coins > 0) {
+            const useCoin = confirm("You’ve reached your 2 free saves today. Use 1 coin to save again?");
+            if (useCoin) {
+              coins--;
+              localStorage.setItem("pomify_coins", coins);
+              if (coinsSpan) coinsSpan.textContent = coins;
+              extraSaveUsed = true;
+              localStorage.setItem("mindmap_extraSaveUsed", true);
+              await saveAsPDF();
+              alert("✅ Mind Map saved using 1 coin!");
             }
           } else {
-            alert("❌ Extra save already used today. Come back tomorrow or go Premium!");
-            return;
+            alert("❌ No coins left or extra save already used. Come back tomorrow or upgrade to Premium!");
           }
-        } else {
-          await saveAsPDF();
-          dailySaves++;
-          localStorage.setItem("mindmap_dailySaves", dailySaves);
-          alert(`✅ Mind Map saved! (${dailySaves}/${maxFreeSaves} free saves used)`);
+          return;
         }
+
+        await saveAsPDF();
+        dailySaves++;
+        localStorage.setItem("mindmap_dailySaves", dailySaves);
+        alert(`✅ Mind Map saved! (${dailySaves}/${maxFreeSaves} free saves used)`);
       });
 
       // === SAVE FUNCTION ===
@@ -415,6 +413,7 @@
       }
     });
     </script>
+
 
     <script src="JS/CoinsUpdate.js"></script>
   </body>
