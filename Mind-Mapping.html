@@ -224,117 +224,118 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-      const canvas = document.getElementById("mindmapCanvas");
-      const ctx = canvas.getContext("2d");
-      const area = document.getElementById("mindmapArea");
-      let drawing = false;
-      let mode = "pen";
-      let color = "#a00000";
+    const canvas = document.getElementById("mindmapCanvas");
+    const ctx = canvas.getContext("2d");
+    const area = document.getElementById("mindmapArea");
+    let drawing = false;
+    let mode = "pen";
+    let color = "#a00000";
 
-      function setActiveButton(id) {
-        document.querySelectorAll(".btn").forEach(btn => btn.classList.remove("active"));
-        document.getElementById(id).classList.add("active");
+    // === BUTTON LOGIC ===
+    function setActiveButton(id) {
+      document.querySelectorAll(".btn").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    document.getElementById("penBtn").onclick = () => { mode = "pen"; setActiveButton("penBtn"); };
+    document.getElementById("eraserBtn").onclick = () => { mode = "eraser"; setActiveButton("eraserBtn"); };
+    document.getElementById("textBtn").onclick = () => { mode = "text"; setActiveButton("textBtn"); };
+    document.getElementById("colorPicker").oninput = e => { color = e.target.value; ctx.strokeStyle = color; };
+
+    // === DRAWING + ERASER ===
+    canvas.addEventListener("mousedown", e => {
+      if (mode === "pen" || mode === "eraser") {
+        drawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+      } else if (mode === "text") {
+        const div = document.createElement("div");
+        div.className = "draggable-text";
+        div.contentEditable = "true";
+        div.style.left = e.offsetX + "px";
+        div.style.top = e.offsetY + "px";
+        div.innerText = "Type here";
+        area.appendChild(div);
+        makeDraggable(div);
+        addDeleteOption(div);
+      }
+    });
+
+    canvas.addEventListener("mousemove", e => {
+      if (!drawing) return;
+      if (mode === "pen") {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      } else if (mode === "eraser") {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 10;
+        ctx.stroke();
+      }
+    });
+    ["mouseup", "mouseout"].forEach(ev => canvas.addEventListener(ev, () => drawing = false));
+
+    // === DRAGGABLE TEXT ===
+    function makeDraggable(el) {
+      let offsetX, offsetY, isDown = false;
+      el.addEventListener("mousedown", e => {
+        if (e.target.classList.contains("delete-btn")) return;
+        isDown = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+      });
+      document.addEventListener("mousemove", e => {
+        if (!isDown) return;
+        el.style.left = (e.clientX - offsetX) + "px";
+        el.style.top = (e.clientY - offsetY) + "px";
+      });
+      document.addEventListener("mouseup", () => isDown = false);
+    }
+
+    // === DELETE BUTTON FOR TEXT BOXES ===
+    function addDeleteOption(div) {
+      const del = document.createElement("button");
+      del.innerHTML = "&times;";
+      del.className = "delete-btn";
+      area.appendChild(del);
+
+      function positionDeleteBtn() {
+        del.style.left = (div.offsetLeft + div.offsetWidth + 5) + "px";
+        del.style.top = (div.offsetTop - 5) + "px";
       }
 
-      document.getElementById("penBtn").onclick = () => { mode = "pen"; setActiveButton("penBtn"); };
-      document.getElementById("eraserBtn").onclick = () => { mode = "eraser"; setActiveButton("eraserBtn"); };
-      document.getElementById("textBtn").onclick = () => { mode = "text"; setActiveButton("textBtn"); };
-      document.getElementById("colorPicker").oninput = e => { color = e.target.value; ctx.strokeStyle = color; };
-
-      // Drawing + Erasing
-      canvas.addEventListener("mousedown", e => {
-        if (mode === "pen" || mode === "eraser") {
-          drawing = true;
-          ctx.beginPath();
-          ctx.moveTo(e.offsetX, e.offsetY);
-        } else if (mode === "text") {
-          const div = document.createElement("div");
-          div.className = "draggable-text";
-          div.contentEditable = "true";
-          div.style.left = e.offsetX + "px";
-          div.style.top = e.offsetY + "px";
-          div.innerText = "Type here";
-          area.appendChild(div);
-          makeDraggable(div);
-          addDeleteOption(div);
-        }
+      div.addEventListener("click", () => {
+        positionDeleteBtn();
+        del.style.display = "block";
+        setTimeout(() => del.style.display = "none", 2500);
       });
 
-      canvas.addEventListener("mousemove", e => {
-        if (!drawing) return;
-        if (mode === "pen") {
-          ctx.lineTo(e.offsetX, e.offsetY);
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        } else if (mode === "eraser") {
-          ctx.lineTo(e.offsetX, e.offsetY);
-          ctx.strokeStyle = "#fff";
-          ctx.lineWidth = 10;
-          ctx.stroke();
-        }
+      del.addEventListener("click", () => {
+        area.removeChild(div);
+        area.removeChild(del);
       });
 
-      ["mouseup", "mouseout"].forEach(ev => canvas.addEventListener(ev, () => drawing = false));
+      new MutationObserver(positionDeleteBtn).observe(div, { attributes: true, attributeFilter: ["style"] });
+    }
 
-      // Draggable Text Boxes
-      function makeDraggable(el) {
-        let offsetX, offsetY, isDown = false;
-        el.addEventListener("mousedown", e => {
-          if (e.target.classList.contains("delete-btn")) return;
-          isDown = true;
-          offsetX = e.clientX - el.offsetLeft;
-          offsetY = e.clientY - el.offsetTop;
-        });
-        document.addEventListener("mousemove", e => {
-          if (!isDown) return;
-          el.style.left = (e.clientX - offsetX) + "px";
-          el.style.top = (e.clientY - offsetY) + "px";
-        });
-        document.addEventListener("mouseup", () => isDown = false);
-      }
+    // === PREMIUM + SAVE SYSTEM ===
+    document.addEventListener("DOMContentLoaded", () => {
+      const userPlan = (localStorage.getItem("pomify_plan") || "Basic").toLowerCase();
+      const isPremiumUser = userPlan.includes("premium");
 
-      // Delete Option for Text Boxes
-      function addDeleteOption(div) {
-        const del = document.createElement("button");
-        del.innerHTML = "&times;";
-        del.className = "delete-btn";
-        area.appendChild(del);
-
-        function positionDeleteBtn() {
-          del.style.left = (div.offsetLeft + div.offsetWidth + 5) + "px";
-          del.style.top = (div.offsetTop - 5) + "px";
-        }
-
-        div.addEventListener("click", () => {
-          positionDeleteBtn();
-          del.style.display = "block";
-          setTimeout(() => del.style.display = "none", 2500);
-        });
-
-        del.addEventListener("click", () => {
-          area.removeChild(div);
-          area.removeChild(del);
-        });
-
-        new MutationObserver(positionDeleteBtn).observe(div, { attributes: true, attributeFilter: ["style"] });
-      }
-      // --- PDF Save Limits ---
-      let dailySaves = parseInt(localStorage.getItem("mindmap_dailySaves")) || 0;
-      const maxFreeSaves = 2;
-      let extraSaveUsed = JSON.parse(localStorage.getItem("mindmap_extraSaveUsed")) || false;
-
-      // --- Coins Sync from LocalStorage ---
+      // Coin + Save limits
       let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
       const coinsSpan = document.getElementById("coins");
-
-      // --- Show coins on screen if element exists ---
       if (coinsSpan) coinsSpan.textContent = coins;
 
-      // --- Daily Reset for Save Limits ---
+      let dailySaves = parseInt(localStorage.getItem("mindmap_dailySaves")) || 0;
+      let extraSaveUsed = JSON.parse(localStorage.getItem("mindmap_extraSaveUsed")) || false;
       const today = new Date().toDateString();
       const lastSaveDate = localStorage.getItem("mindmap_lastSaveDate");
 
+      // Reset daily limits at midnight
       if (lastSaveDate !== today) {
         dailySaves = 0;
         extraSaveUsed = false;
@@ -343,55 +344,78 @@
         localStorage.setItem("mindmap_extraSaveUsed", false);
       }
 
+      // Show badge for Premium
+      if (isPremiumUser) {
+        const badge = document.createElement("div");
+        badge.textContent = userPlan.includes("premium+")
+          ? "💎 Premium+ Access: Lifetime Mind Map Saves"
+          : "🌟 Premium Access: Unlimited Mind Map Saves";
+        badge.style.background = userPlan.includes("premium+") ? "#8a2be2" : "#1db954";
+        badge.style.color = "white";
+        badge.style.padding = "8px 16px";
+        badge.style.borderRadius = "10px";
+        badge.style.marginBottom = "15px";
+        badge.style.fontWeight = "600";
+        document.querySelector(".container.py-4.text-center")?.prepend(badge);
+      }
 
-      // Save as PDF
+      // === SAVE BUTTON HANDLER ===
       document.getElementById("saveBtn").addEventListener("click", async () => {
-      // --- Check free save limit ---
-      if (dailySaves >= maxFreeSaves) {
-        if (!extraSaveUsed) {
-          if (coins > 0) {
-            const useCoin = confirm("You’ve reached your 2 free PDF saves today. Use 1 coin to save another?");
-            if (useCoin) {
-              coins--;
-              localStorage.setItem("pomify_coins", coins);
-              if (coinsSpan) coinsSpan.textContent = coins;
+        // If premium, unlimited saves
+        if (isPremiumUser) {
+          await saveAsPDF();
+          alert("✅ Mind Map saved successfully! (Unlimited saves for Premium users)");
+          return;
+        }
 
-              extraSaveUsed = true;
-              localStorage.setItem("mindmap_extraSaveUsed", true);
-              alert("1 coin deducted. Proceeding to save your PDF.");
+        // Free user limit
+        const maxFreeSaves = 2;
+        if (dailySaves >= maxFreeSaves) {
+          if (!extraSaveUsed) {
+            if (coins > 0) {
+              const useCoin = confirm("You’ve reached your 2 free saves today. Use 1 coin to save again?");
+              if (useCoin) {
+                coins--;
+                localStorage.setItem("pomify_coins", coins);
+                if (coinsSpan) coinsSpan.textContent = coins;
+                extraSaveUsed = true;
+                localStorage.setItem("mindmap_extraSaveUsed", true);
+                await saveAsPDF();
+                alert("✅ Mind Map saved using 1 coin!");
+              } else return;
             } else {
-              alert("PDF save canceled.");
+              alert("❌ No coins left. Come back tomorrow or upgrade to Premium for unlimited saves.");
               return;
             }
           } else {
-            alert("You’ve used all your free saves and have no coins left. Come back tomorrow!");
+            alert("❌ Extra save already used today. Come back tomorrow or go Premium!");
             return;
           }
         } else {
-          alert("You’ve already used your extra PDF save today. Come back tomorrow!");
-          return;
+          await saveAsPDF();
+          dailySaves++;
+          localStorage.setItem("mindmap_dailySaves", dailySaves);
+          alert(`✅ Mind Map saved! (${dailySaves}/${maxFreeSaves} free saves used)`);
         }
+      });
+
+      // === SAVE FUNCTION ===
+      async function saveAsPDF() {
+        const { jsPDF } = window.jspdf;
+        document.querySelectorAll(".delete-btn").forEach(d => d.style.display = "none");
+        document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "none");
+
+        const canvasImage = await html2canvas(area);
+        document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "1px dashed #a00000");
+
+        const imgData = canvasImage.toDataURL("image/png");
+        const pdf = new jsPDF("l", "pt", [canvas.width, canvas.height]);
+        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+        pdf.save("MindMap.pdf");
       }
-
-      // --- Proceed to Save as PDF ---
-      const { jsPDF } = window.jspdf;
-      document.querySelectorAll(".delete-btn").forEach(d => d.style.display = "none");
-      document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "none");
-
-      const canvasImage = await html2canvas(area);
-      document.querySelectorAll(".draggable-text").forEach(d => d.style.border = "1px dashed #a00000");
-
-      const imgData = canvasImage.toDataURL("image/png");
-      const pdf = new jsPDF("l", "pt", [canvas.width, canvas.height]);
-      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-      pdf.save("MindMap.pdf");
-
-      // --- Update counters ---
-      dailySaves++;
-      localStorage.setItem("mindmap_dailySaves", dailySaves);
     });
-
     </script>
+
     <script src="JS/CoinsUpdate.js"></script>
   </body>
 </html>

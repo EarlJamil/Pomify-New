@@ -301,63 +301,63 @@
         </div>
 
         <!-- JS Logic -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    let plan = localStorage.getItem("pomify_plan") || "Basic";
-    let planDate = localStorage.getItem("pomify_plan_date");
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        let plan = localStorage.getItem("pomify_plan") || "Basic";
+        let planDate = localStorage.getItem("pomify_plan_date");
 
-    const planName = document.getElementById("planName");
-    const nextBilling = document.getElementById("nextBilling");
-    const versionDisplay = document.getElementById("versionDisplay");
-    const billingDisplay = document.getElementById("billingDisplay");
-    const upgradeBtn = document.getElementById("upgradeBtn");
+        const planName = document.getElementById("planName");
+        const nextBilling = document.getElementById("nextBilling");
+        const versionDisplay = document.getElementById("versionDisplay");
+        const billingDisplay = document.getElementById("billingDisplay");
+        const upgradeBtn = document.getElementById("upgradeBtn");
 
-    // Create Revert Button
-    const revertBtn = document.createElement("button");
-    revertBtn.className = "btn btn-outline-danger px-3 py-1 ms-2";
-    revertBtn.textContent = "Revert to Basic";
-    revertBtn.style.display = "none"; // hidden by default
+        // Create Revert Button
+        const revertBtn = document.createElement("button");
+        revertBtn.className = "btn btn-outline-danger px-3 py-1 ms-2";
+        revertBtn.textContent = "Revert to Basic";
+        revertBtn.style.display = "none"; // hidden by default
 
-    // Append next to Upgrade Button's container
-    upgradeBtn.parentElement.appendChild(revertBtn);
+        // Append next to Upgrade Button's container
+        upgradeBtn.parentElement.appendChild(revertBtn);
 
-    // Update plan info
-    planName.textContent = plan + " Plan";
-    versionDisplay.textContent = plan + " Version";
+        // Update plan info
+        planName.textContent = plan + " Plan";
+        versionDisplay.textContent = plan + " Version";
 
-    // Compute next billing date
-    if (planDate) {
-      const purchaseDate = new Date(planDate);
-      const formatted = purchaseDate.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
+        // Compute next billing date
+        if (planDate) {
+          const purchaseDate = new Date(planDate);
+          const formatted = purchaseDate.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+
+          nextBilling.textContent = "Next Billing: " + formatted;
+          billingDisplay.textContent = "Next Billing: " + formatted;
+        } else {
+          nextBilling.textContent = "No active billing cycle";
+          billingDisplay.textContent = "No active billing cycle";
+        }
+
+        // Hide upgrade button for Premium, show revert option
+        if (plan.toLowerCase() === "premium" || plan.toLowerCase() === "premium+") {
+          upgradeBtn.style.display = "none";
+          revertBtn.style.display = "inline-block";
+        }
+
+        // Handle revert click
+        revertBtn.addEventListener("click", () => {
+          if (confirm("Are you sure you want to revert to the Basic plan?")) {
+            localStorage.setItem("pomify_plan", "Basic");
+            localStorage.removeItem("pomify_plan_date");
+            alert("Your plan has been reverted to Basic.");
+            location.reload();
+          }
+        });
       });
-
-      nextBilling.textContent = "Next Billing: " + formatted;
-      billingDisplay.textContent = "Next Billing: " + formatted;
-    } else {
-      nextBilling.textContent = "No active billing cycle";
-      billingDisplay.textContent = "No active billing cycle";
-    }
-
-    // Hide upgrade button for Premium, show revert option
-    if (plan.toLowerCase() === "premium" || plan.toLowerCase() === "premium+") {
-      upgradeBtn.style.display = "none";
-      revertBtn.style.display = "inline-block";
-    }
-
-    // Handle revert click
-    revertBtn.addEventListener("click", () => {
-      if (confirm("Are you sure you want to revert to the Basic plan?")) {
-        localStorage.setItem("pomify_plan", "Basic");
-        localStorage.removeItem("pomify_plan_date");
-        alert("Your plan has been reverted to Basic.");
-        location.reload();
-      }
-    });
-  });
-</script>
+    </script>
 
       </div>
     </div>
