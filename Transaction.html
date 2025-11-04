@@ -184,8 +184,14 @@
   } else {
     // Populate product details
     planNameElem.textContent = productData.name;
+    if (productData.name.toLowerCase().includes('premium')) {
+      productPriceElem.textContent = `₱${parseFloat(productData.price).toFixed(2)} / month`;
+    } else{
+      productPriceElem.textContent = `₱${parseFloat(productData.price).toFixed(2)}`;
+
+    }
     summaryPriceElem.textContent = `₱${parseFloat(productData.price).toFixed(2)}`;
-    productPriceElem.textContent = `₱${parseFloat(productData.price).toFixed(2)} / month`;
+    
     basePrice = parseFloat(productData.price);
 
     // Description -> bullet list if provided
@@ -227,6 +233,7 @@
       totalElem.textContent = formatCurrency(basePrice);
       // Hide baseTimes
       baseTimesElem.style.display = 'none';
+
     }
   }
 
@@ -290,7 +297,10 @@
 
     // Next billing display (today + selectedDuration months)
     const nextBilling = addMonths(new Date(), selectedDuration);
-    nextBillingDisplay.textContent = `Next Billing: ${formatFullDate(nextBilling)}`;
+    if (productData.name.toLowerCase().includes('premium')){
+        nextBillingDisplay.textContent = `Next Billing: ${formatFullDate(nextBilling)}`;
+    }
+    
   }
 
   // initial summary update (also re-apply creator if persisted)
@@ -312,6 +322,11 @@
       localStorage.setItem('pomify_plan', productData.name);
       localStorage.setItem('pomify_plan_duration', selectedDuration.toString());
       localStorage.setItem('pomify_plan_date', new Date(nextBilling).toString());
+      if (nameLower.includes('+')){
+        let currentCoins = parseInt(localStorage.getItem('pomify_coins')) || 0;
+        currentCoins += 100;
+        localStorage.setItem('pomify_coins', currentCoins.toString());
+      }
       alert(`🎉 Subscribed to ${productData.name} for ${selectedDuration} month(s).\nNext billing: ${formatFullDate(nextBilling)}`);
     } else if (nameLower.includes('coin')) {
       // coin purchase: parse coin count from name like "10 Coins"
