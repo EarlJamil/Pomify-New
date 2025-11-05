@@ -688,6 +688,59 @@ window.addTask = addTask;
 window.removeTask = removeTask;
 window.setActiveTask = setActiveTask;
 </script>
+<!-- === Add-on Script: Auto-mark active task done === -->
+<script>
+(function () {
+  // Keep a handle to the existing functions
+  const __origStart = window.startTimer;
+  const __origReset = window.resetTimer;
+
+  // Local running flag for this wrapper
+  let running = false;
+
+  // Helper: mark the currently active task as done
+  function markActiveTaskDone() {
+    const active = document.querySelector("#taskItems li.active");
+    if (!active) return;
+    active.classList.add("done");
+    active.classList.remove("active");
+    try { window.syncToEisenhower && window.syncToEisenhower(); } catch(_) {}
+  }
+
+  // Patch the alarm element's play() so we can hook the exact moment a cycle ends.
+  const alarmEl = document.getElementById("alarm");
+  if (alarmEl && typeof alarmEl.play === "function") {
+    const __origPlay = alarmEl.play.bind(alarmEl);
+    alarmEl.play = function () {
+      try {
+        if (running && typeof isWork !== "undefined" && isWork === true) {
+          markActiveTaskDone();
+        }
+      } catch (_) {}
+      return __origPlay();
+    };
+  }
+
+  // Wrap startTimer: set running = true, then call original
+  if (typeof __origStart === "function") {
+    window.startTimer = function () {
+      running = true;
+      return __origStart.apply(this, arguments);
+    };
+  }
+
+  // Wrap resetTimer: clear running, then call original
+  if (typeof __origReset === "function") {
+    window.resetTimer = function () {
+      running = false;
+      return __origReset.apply(this, arguments);
+    };
+  }
+
+  // Expose helper if you ever want to trigger it manually
+  window.markActiveTaskDone = markActiveTaskDone;
+})();
+</script>
 
 
 
