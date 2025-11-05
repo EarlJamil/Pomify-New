@@ -178,3 +178,56 @@
 
     renderPosts();
  
+    document.addEventListener("DOMContentLoaded", () => {
+          const searchInput = document.getElementById("searchInput");
+          const suggestionsBox = document.getElementById("suggestions");
+
+          const pages = [
+            { name: "Dashboard", url: "Dashboard.html" },
+            { name: "Calendar / Task Management", url: "TaskManagement.html" },
+            { name: "Pomodoro Technique", url: "Pomodoro.html" },
+            { name: "Eisenhower Matrix", url: "Eisenhower.html" },
+            { name: "Mind Mapping", url: "Mind-Mapping.html" },
+            { name: "Study Notes", url: "Notes.html" },
+            { name: "Shop / Pomi Coins", url: "Shop.html" },
+            { name: "Socials", url: "Socials.html" },
+            { name: "Settings", url: "Settings.html" }
+          ];
+
+          // Show suggestions as user types
+          searchInput.addEventListener("input", () => {
+            const query = searchInput.value.toLowerCase().trim();
+            suggestionsBox.innerHTML = "";
+
+            if (!query) {
+              suggestionsBox.style.display = "none";
+              return;
+            }
+
+            const matched = pages.filter(p => p.name.toLowerCase().includes(query));
+
+            if (matched.length === 0) {
+              suggestionsBox.style.display = "none";
+              return;
+            }
+
+            matched.forEach(p => {
+              const li = document.createElement("li");
+              li.classList.add("list-group-item");
+              li.textContent = p.name;
+              li.addEventListener("click", () => {
+                window.location.href = p.url;
+              });
+              suggestionsBox.appendChild(li);
+            });
+
+            suggestionsBox.style.display = "block";
+          });
+
+          // Hide suggestions when clicking outside
+          document.addEventListener("click", (e) => {
+            if (!e.target.closest(".search-container")) {
+              suggestionsBox.style.display = "none";
+            }
+          });
+        });

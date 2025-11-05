@@ -37,6 +37,26 @@
     .go-back:hover { color: #555; }
     .small-muted { color: #6c757d; font-size: .9rem; }
     .next-billing { font-size: .9rem; color: #6c757d; margin-top: 8px; }
+    .search-container {
+        position: relative;
+      }
+
+      #suggestions {
+        background: #fff;
+        border-radius: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      #suggestions li {
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      #suggestions li:hover {
+        background: #f5eaea;
+      }
   </style>
 </head>
 <body>
