@@ -284,6 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
             { name: "Mind Mapping", url: "Mind-Mapping.html" },
             { name: "Study Notes", url: "Notes.html" },
             { name: "Shop / Pomi Coins", url: "Shop.html" },
+            { name: "Shop / Premium", url: "Shop.html" },
             { name: "Socials", url: "Socials.html" },
             { name: "Settings", url: "Settings.html" }
           ];
