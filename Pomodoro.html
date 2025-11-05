@@ -373,6 +373,14 @@
   function startTimer() {
     clearInterval(timer);
 
+    if (isWork && !isPremiumUser) {
+    if (dailyPomodoros < maxDailyPomodoros || extraUnlocked) {
+      dailyPomodoros++;
+      localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
+      updateExtraSessionStatus();
+    }
+  }
+
     // --- Premium Users: Skip Limit Logic ---
     if (!isPremiumUser) {
       // --- Handle extra session start for free users only ---
@@ -431,13 +439,19 @@
         alarm.play();
 
         if (isWork) {
-          coins++;
+          let coinReward = 1;
+          if (userPlan.includes("premium+")) {
+            coinReward = 3;
+          } else if (userPlan.includes("premium")) {
+            coinReward = 2;
+          }
+
+          // --- Add coins based on plan ---
+          coins += coinReward;
           localStorage.setItem("pomify_coins", coins);
           coinsSpan.textContent = coins;
 
-          dailyPomodoros++;
-          localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
-          updateExtraSessionStatus();
+          
 
           // --- Automatically start break ---
           isWork = false;
