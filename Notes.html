@@ -323,6 +323,16 @@
       #suggestions li:hover {
         background: #f5eaea;
       }
+      .btn-danger {
+  background: linear-gradient(90deg, #a00000, #d83a3a);
+  border: none;
+  transition: all 0.2s ease-in-out;
+}
+.btn-danger:hover {
+  background: linear-gradient(90deg, #d83a3a, #a00000);
+  transform: translateY(-2px);
+}
+
     </style>
   </head>
 
@@ -409,6 +419,9 @@
           </div>
 
           <div class="note-section">
+            <a href="Dashboard.html" class="btn btn-danger mb-4 d-inline-flex align-items-center shadow-sm" style="border-radius: 25px; font-weight: 500;">
+                <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+              </a>
             <div class="row g-4">
               
               <!-- Pomodoro -->
