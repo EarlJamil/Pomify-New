@@ -336,24 +336,47 @@
     if (!productData) return;
 
     const nameLower = productData.name.toLowerCase();
+
+    // Helper: persist plan in a canonical way
+    function savePlan({ displayName, tier, months }) {
+      const since = new Date();
+      const nextBilling = addMonths(since, months);
+
+      // Canonical keys
+      localStorage.setItem('pomify_plan_name', displayName);         // e.g., "Premium+"
+      localStorage.setItem('pomify_plan_tier', tier);                // "basic" | "premium" | "premium+"
+      localStorage.setItem('pomify_plan_since', since.toISOString());
+      localStorage.setItem('pomify_plan_nextBilling', nextBilling.toISOString());
+      localStorage.setItem('pomify_plan_duration', String(months));  // 1,3,6,12
+
+      // Backwards-compat with older pages that read this:
+      localStorage.setItem('pomify_plan', displayName);
+
+      // Show user
+      alert(`🎉 Subscribed to ${displayName} for ${months} month(s).\nNext billing: ${formatFullDate(nextBilling)}`);
+    }
+
     if (nameLower.includes('premium')) {
-      // Save plan, duration and next billing date
-      const nextBilling = addMonths(new Date(), selectedDuration);
-      localStorage.setItem('pomify_plan', productData.name);
-      localStorage.setItem('pomify_plan_duration', selectedDuration.toString());
-      localStorage.setItem('pomify_plan_date', new Date(nextBilling).toString());
-      if (nameLower.includes('+')){
-        let currentCoins = parseInt(localStorage.getItem('pomify_coins')) || 0;
-        currentCoins += 100;
-        localStorage.setItem('pomify_coins', currentCoins.toString());
+      // figure tier
+      const isPlus = nameLower.includes('+');
+      const tier = isPlus ? 'premium+' : 'premium';
+      const displayName = isPlus ? 'Premium+' : 'Premium';
+
+      // persist
+      savePlan({ displayName, tier, months: selectedDuration });
+
+      // one-time Premium+ bonus on purchase
+      if (isPlus) {
+        const cur = parseInt(localStorage.getItem('pomify_coins')) || 0;
+        localStorage.setItem('pomify_coins', String(cur + 100));
       }
-      alert(`🎉 Subscribed to ${productData.name} for ${selectedDuration} month(s).\nNext billing: ${formatFullDate(nextBilling)}`);
+
     } else if (nameLower.includes('coin')) {
-      // coin purchase: parse coin count from name like "10 Coins"
+      // coin packs (unchanged)
       const coinCount = parseInt(productData.name);
       let currentCoins = parseInt(localStorage.getItem('pomify_coins')) || 0;
       currentCoins += (isNaN(coinCount) ? 0 : coinCount);
-      localStorage.setItem('pomify_coins', currentCoins.toString());
+      localStorage.setItem('pomify_coins', String(currentCoins));
       alert(`💰 You received ${(isNaN(coinCount) ? 0 : coinCount)} coins! Total: ${currentCoins}`);
     }
 

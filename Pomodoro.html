@@ -320,391 +320,367 @@
       </div>
     </div>
   <script>
-  // --- Timer & Task variables ---
-  let timer;
-  let isWork = true;
-  let timeLeft = 25 * 60;
-  let activeTask = null;
+/* =========================
+   Pomify Pomodoro — Full Script
+   - Caps: Basic 5 | Premium 15 | Premium+ 20
+   - Rewards: 1× / 2× / 3× coins after WORK session
+   - Extra session: 1 coin after hitting cap
+   - Auto-expire on nextBilling
+   - Same-day upgrade reset (counter->0, extras->false)
+   ========================= */
 
-  // --- Coins & Mechanics (Persistent via localStorage) ---
-  let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
-  let dailyPomodoros = parseInt(localStorage.getItem("pomify_dailyPomodoros")) || 0;
-  const maxDailyPomodoros = 5;
-  let extraSessionUsed = JSON.parse(localStorage.getItem("pomify_extraSessionUsed")) || false;
-  let extraUnlocked = JSON.parse(localStorage.getItem("pomify_extraUnlocked")) || false;
+// ---------- Tier & Plan Helpers ----------
+function getCanonicalTier() {
+  // Prefer canonical tier if present
+  const tier = (localStorage.getItem('pomify_plan_tier') || '').toLowerCase();
+  if (tier) return tier;
 
-  const startBtn = document.getElementById("startBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const coinsSpan = document.getElementById("coins");
-  const alarm = document.getElementById("alarm");
-  const extraSessionStatus = document.getElementById("extraSessionStatus");
+  // Back-compat with older key
+  const legacy = (localStorage.getItem('pomify_plan') || 'basic').toLowerCase();
+  if (legacy.includes('premium+')) return 'premium+';
+  if (legacy.includes('premium'))  return 'premium';
+  return 'basic';
+}
 
-  // --- Premium Detection ---
-  const userPlan = (localStorage.getItem("pomify_plan") || "Basic").toLowerCase();
-  const isPremiumUser = userPlan.includes("premium");
+function getTierRank(tier) {
+  if (tier === 'premium+') return 2;
+  if (tier === 'premium')  return 1;
+  return 0; // basic
+}
 
-  // --- Initialize display ---
-  coinsSpan.textContent = coins;
-  updateExtraSessionStatus();
-  updateDisplay();
+function getPlanConfig() {
+  const tier = getCanonicalTier();
+  if (tier === 'premium+') return { name: 'Premium+', maxFree: 20, multiplier: 3 };
+  if (tier === 'premium')  return { name: 'Premium',  maxFree: 15, multiplier: 2 };
+  return { name: 'Basic', maxFree: 5, multiplier: 1 };
+}
 
-  // --- Premium Badge Display ---
-  if (isPremiumUser) {
-    const badge = document.createElement("div");
-    badge.textContent = userPlan.includes("premium+")
-      ? "💎 Premium+ Access: Unlimited Pomodoro Sessions"
-      : "🌟 Premium Access: Unlimited Pomodoro Sessions";
-    badge.style.background = userPlan.includes("premium+") ? "#8a2be2" : "#1db954";
-    badge.style.color = "white";
-    badge.style.padding = "8px 16px";
-    badge.style.borderRadius = "10px";
-    badge.style.margin = "10px auto";
-    badge.style.textAlign = "center";
-    badge.style.fontWeight = "600";
-    document.querySelector(".container").prepend(badge);
+function todayKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+
+// Auto-expire plan if nextBilling has passed
+function ensurePlanValidity() {
+  const nextISO = localStorage.getItem('pomify_plan_nextBilling');
+  const tier = (localStorage.getItem('pomify_plan_tier') || '').toLowerCase();
+  if (!nextISO || !tier) return;
+
+  const now = new Date();
+  const next = new Date(nextISO);
+  if (isFinite(next) && now >= next) {
+    // Downgrade to Basic
+    localStorage.setItem('pomify_plan_tier', 'basic');
+    localStorage.setItem('pomify_plan_name', 'Basic');
+    localStorage.setItem('pomify_plan', 'Basic'); // back-compat
+    localStorage.removeItem('pomify_plan_nextBilling');
+    localStorage.removeItem('pomify_plan_duration');
+
+    // Optional feedback
+    // alert('Your Premium plan has expired. You are now on Basic.');
   }
+}
 
-  // --- Helper: Update session status text ---
-  function updateExtraSessionStatus() {
-    if (isPremiumUser) {
-      extraSessionStatus.textContent = "Unlimited Pomodoro sessions available.";
-      return;
-    }
+// ---------- State ----------
+let timer;
+let isWork = true;
+let timeLeft = 25 * 60;
+let activeTask = null;
 
-    if (dailyPomodoros < maxDailyPomodoros) {
-      extraSessionStatus.textContent = `Pomodoros used today: ${dailyPomodoros}/5`;
-    } else if (!extraSessionUsed && !extraUnlocked) {
-      extraSessionStatus.textContent = "You’ve reached 5 Pomodoros. Use 1 coin to unlock an extra session.";
-    } else if (extraUnlocked && !extraSessionUsed) {
-      extraSessionStatus.textContent = "Extra session unlocked! You can use it anytime today.";
-    } else {
-      extraSessionStatus.textContent = "Extra session used.";
-    }
-  }
+// Persisted counters
+let coins = parseInt(localStorage.getItem("pomify_coins")) || 0;
+let dailyPomodoros = parseInt(localStorage.getItem("pomify_dailyPomodoros")) || 0;
+let extraSessionUsed = JSON.parse(localStorage.getItem("pomify_extraSessionUsed")) || false;
+let extraUnlocked = JSON.parse(localStorage.getItem("pomify_extraUnlocked")) || false;
 
-  // --- Timer display ---
-  function updateDisplay() {
-    let minutes = Math.floor(timeLeft / 60);
-    let seconds = timeLeft % 60;
-    document.getElementById("time").innerHTML =
-      (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-    document.title =
-      (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " Pomodoro";
-  }
+// DOM refs
+const startBtn = document.getElementById("startBtn");
+const resetBtn = document.getElementById("resetBtn");
+const coinsSpan = document.getElementById("coins");
+const alarm = document.getElementById("alarm");
+const extraSessionStatus = document.getElementById("extraSessionStatus");
 
-  function setTimeFromInputs() {
-      const workInput = parseInt(document.getElementById("workTime").value) || 25;
-      const breakInput = parseInt(document.getElementById("breakTime").value) || 5;
-      if (isWork) {
-        timeLeft = workInput * 60;
-        document.getElementById("status").innerHTML = "Work Session";
-      } else {
-        timeLeft = breakInput * 60;
-        document.getElementById("status").innerHTML = "Break Time!";
-      }
-      updateDisplay();
-    }
+// Ensure plan validity before reading config
+ensurePlanValidity();
 
-  // --- Start Timer Function ---
-  function startTimer() {
-    clearInterval(timer);
+// Same-day reset & upgrade-aware reset
+function ensureDailyReset() {
+  const today = todayKey();
+  const lastStatDate = localStorage.getItem("pomify_lastStatDate");
 
-    // Always refresh the timer based on the latest inputs before starting
-    setTimeFromInputs();
+  if (lastStatDate !== today) {
+    // New day → reset stats
+    localStorage.setItem("pomify_dailyPomodoros", "0");
+    localStorage.setItem("pomify_extraSessionUsed", "false");
+    localStorage.setItem("pomify_extraUnlocked", "false");
+    localStorage.setItem("pomify_lastStatDate", today);
 
-
-  //   if (isWork && !isPremiumUser) {
-  //   if (dailyPomodoros < maxDailyPomodoros || extraUnlocked) {
-  //     dailyPomodoros++;
-  //     localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
-  //     updateExtraSessionStatus();
-  //   }
-  // }
-
-    // --- Premium Users: Skip Limit Logic ---
-    if (!isPremiumUser) {
-      // --- Handle extra session start for free users only ---
-      if (dailyPomodoros >= maxDailyPomodoros) {
-        // If the current session is a break, allow it to run (after 5th Pomodoro)
-        if (!isWork) {
-          // Let the 5th break continue
-        } else {
-          // For new work sessions beyond 5
-          if (extraSessionUsed) {
-            alert("You’ve already used your extra session today. Come back tomorrow!");
-            startBtn.disabled = true;
-            return;
-          }
-
-          if (extraUnlocked && !extraSessionUsed) {
-            if (coins > 0) {
-              alert("Starting your extra session will deduct 1 coin.");
-              coins--;
-              localStorage.setItem("pomify_coins", coins);
-              coinsSpan.textContent = coins;
-
-              extraSessionUsed = true;
-              localStorage.setItem("pomify_extraSessionUsed", true);
-              updateExtraSessionStatus();
-            } else {
-              alert("You’ve unlocked the extra session, but you don’t have any coins left!");
-              return;
-            }
-          } else if (!extraUnlocked) {
-            alert("You’ve completed your 5 Pomodoro sessions for today! Wait for the break to finish to unlock your extra session.");
-            return;
-          }
-        }
-      }
-    }
-
-
-    // --- Timer setup ---
-    let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
-    let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
-
-    // Only set timeLeft if it hasn’t been pre-set for the next session
-    if (timeLeft <= 0 || timeLeft === undefined) {
-      timeLeft = isWork ? workMinutes * 60 : breakMinutes * 60;
-    }
-    updateDisplay();
-
-
-    startBtn.disabled = true;
-    resetBtn.disabled = false;
-    document.getElementById("status").innerHTML = isWork ? "Work Session" : "Break Time!";
-
-    // --- Timer loop ---
-    timer = setInterval(function () {
-      if (timeLeft > 0) {
-        timeLeft--;
-        updateDisplay();
-      } else {
-        clearInterval(timer);
-        alarm.play();
-
-        if (isWork) {
-          // --- Reward coins based on plan ---
-          let coinReward = 1;
-          if (userPlan.includes("premium+")) {
-            coinReward = 3;
-          } else if (userPlan.includes("premium")) {
-            coinReward = 2;
-          }
-
-          coins += coinReward;
-          localStorage.setItem("pomify_coins", coins);
-          coinsSpan.textContent = coins;
-
-          // --- Increment daily Pomodoro count AFTER completing work ---
-          if (!isPremiumUser) {
-            if (dailyPomodoros < maxDailyPomodoros) {
-              dailyPomodoros++;
-              localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
-              updateExtraSessionStatus();
-            }
-          }
-
-          // --- Switch to Break Mode ---
-          isWork = false;
-          let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
-          timeLeft = breakMinutes * 60;
-          document.getElementById("status").innerHTML = "Break Time!";
-          updateDisplay();
-
-          setTimeout(() => {
-            startTimer();
-          }, 1500);
-        } else {
-          isWork = true;
-
-          // --- Free users only ---
-          if (!isPremiumUser) {
-            if (dailyPomodoros === maxDailyPomodoros && !extraUnlocked && !extraSessionUsed) {
-              alert("🎉 You’ve completed all 5 Pomodoros today! You can now use 1 coin for an extra session.");
-              extraUnlocked = true;
-              localStorage.setItem("pomify_extraUnlocked", true);
-              updateExtraSessionStatus();
-              startBtn.disabled = false;
-            } else if (dailyPomodoros > maxDailyPomodoros && extraSessionUsed) {
-              alert("Extra session completed! Great job today!");
-              extraUnlocked = false;
-              localStorage.setItem("pomify_extraUnlocked", false);
-              updateExtraSessionStatus();
-              startBtn.disabled = true;
-            } else {
-              document.getElementById("status").innerHTML = "Ready for next session!";
-              startBtn.disabled = false;
-              resetBtn.disabled = true;
-              let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
-              timeLeft = workMinutes * 60;
-              updateDisplay();
-            }
-          } else {
-            // --- Premium users always continue ---
-            document.getElementById("status").innerHTML = "Ready for next session!";
-            startBtn.disabled = false;
-            resetBtn.disabled = true;
-            let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
-            timeLeft = workMinutes * 60;
-            updateDisplay();
-          }
-        }
-      }
-    }, 1000);
-  }
-
-  // --- Reset Timer Function ---
-  function resetTimer() {
-    clearInterval(timer);
-    isWork = true;
-    let workMinutes = parseInt(document.getElementById("workTime")?.value) || 25;
-    timeLeft = workMinutes * 60;
-    document.getElementById("status").innerHTML = "Ready";
-    updateDisplay();
-    startBtn.disabled = false;
-    resetBtn.disabled = true;
-  }
-
-  // --- Sync Coins Across Tabs ---
-  window.addEventListener("storage", (event) => {
-    if (event.key === "pomify_coins") {
-      coins = parseInt(event.newValue) || 0;
-      coinsSpan.textContent = coins;
-    }
-  });
-
-  // --- Task System ---
-  function addTask() {
-    const input = document.getElementById("taskInput");
-    const text = input.value.trim();
-    if (!text) return;
-    addTaskToList(text);
-    input.value = "";
-    syncToEisenhower();
-  }
-
-  function addTaskToList(text) {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${text}</span>
-      <div>
-        <button class="btn btn-sm btn-outline-danger me-1" onclick="removeTask(this)">
-          <i class="bi bi-trash"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-dark" onclick="setActiveTask(this)">
-          <i class="bi bi-hourglass-split"></i>
-        </button>
-      </div>
-    `;
-    document.getElementById("taskItems").appendChild(li);
-  }
-
-  function removeTask(btn) {
-    const li = btn.closest("li");
-    if (li === activeTask) activeTask = null;
-    li.remove();
-    syncToEisenhower();
-  }
-
-  function setActiveTask(btn) {
-    document.querySelectorAll("#taskItems li").forEach(li => li.classList.remove("active"));
-    activeTask = btn.closest("li");
-    activeTask.classList.add("active");
-  }
-
-  function syncToEisenhower() {
-    const taskTexts = Array.from(document.querySelectorAll("#taskItems li span"))
-      .map(span => span.textContent.trim());
-    localStorage.setItem("pomify_do_tasks", JSON.stringify(taskTexts));
-  }
-
-  function loadTasks() {
-    const savedTasks = JSON.parse(localStorage.getItem("pomify_do_tasks")) || [];
-    const taskList = document.getElementById("taskItems");
-    taskList.innerHTML = "";
-    savedTasks.forEach(text => addTaskToList(text));
-  }
-
-  window.addEventListener("storage", (event) => {
-    if (event.key === "pomify_do_tasks") loadTasks();
-  });
-
-  // --- Reset daily stats ---
-  function resetDailyStats() {
+    // Record starting tier for the day
+    localStorage.setItem("pomify_lastTierOnDate", getCanonicalTier());
     dailyPomodoros = 0;
     extraSessionUsed = false;
     extraUnlocked = false;
-    localStorage.setItem("pomify_dailyPomodoros", 0);
-    localStorage.setItem("pomify_extraSessionUsed", false);
-    localStorage.setItem("pomify_extraUnlocked", false);
-    updateExtraSessionStatus();
+    return;
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-          const searchInput = document.getElementById("searchInput");
-          const suggestionsBox = document.getElementById("suggestions");
+  // Same day: check mid-day upgrade
+  const currentTier = getCanonicalTier();
+  const lastTierOnDate = (localStorage.getItem("pomify_lastTierOnDate") || "basic").toLowerCase();
 
-          const pages = [
-            { name: "Dashboard", url: "Dashboard.html" },
-            { name: "Calendar / Task Management", url: "TaskManagement.html" },
-            { name: "Pomodoro Technique", url: "Pomodoro.html" },
-            { name: "Eisenhower Matrix", url: "Eisenhower.html" },
-            { name: "Mind Mapping", url: "Mind-Mapping.html" },
-            { name: "Study Notes", url: "Notes.html" },
-            { name: "Shop / Pomi Coins", url: "Shop.html" },
-            { name: "Shop / Premium", url: "Shop.html" },
-            { name: "Socials", url: "Socials.html" },
-            { name: "Settings", url: "Settings.html" }
-          ];
+  if (getTierRank(currentTier) > getTierRank(lastTierOnDate)) {
+    // Upgraded → reset for the rest of the day
+    localStorage.setItem("pomify_dailyPomodoros", "0");
+    localStorage.setItem("pomify_extraSessionUsed", "false");
+    localStorage.setItem("pomify_extraUnlocked", "false");
+    localStorage.setItem("pomify_lastTierOnDate", currentTier);
 
-          // Show suggestions as user types
-          searchInput.addEventListener("input", () => {
-            const query = searchInput.value.toLowerCase().trim();
-            suggestionsBox.innerHTML = "";
+    dailyPomodoros = 0;
+    extraSessionUsed = false;
+    extraUnlocked = false;
+  }
+}
+ensureDailyReset();
 
-            if (!query) {
-              suggestionsBox.style.display = "none";
-              return;
-            }
+// Now compute plan after resets
+let plan = getPlanConfig();
 
-            const matched = pages.filter(p => p.name.toLowerCase().includes(query));
+// ---------- UI Helpers ----------
+function injectPlanBadge() {
+  const badge = document.createElement("div");
+  badge.textContent = `${plan.name} • ${plan.maxFree} free Pomodoros/day • ${plan.multiplier}× coins`;
+  badge.style.background = plan.name === "Premium+" ? "#8a2be2" : (plan.name === "Premium" ? "#1db954" : "#6c757d");
+  badge.style.color = "#fff";
+  badge.style.padding = "8px 16px";
+  badge.style.borderRadius = "10px";
+  badge.style.margin = "10px auto";
+  badge.style.textAlign = "center";
+  badge.style.fontWeight = "600";
+  const topbar = document.querySelector(".topbar");
+  topbar?.insertAdjacentElement("afterend", badge);
+}
 
-            if (matched.length === 0) {
-              suggestionsBox.style.display = "none";
-              return;
-            }
+function updateExtraSessionStatus() {
+  const cap = plan.maxFree;
+  if (dailyPomodoros < cap) {
+    extraSessionStatus.textContent = `Pomodoros used today: ${dailyPomodoros}/${cap}`;
+  } else if (!extraSessionUsed && !extraUnlocked) {
+    extraSessionStatus.textContent = `You’ve reached ${cap}. Finish the break to unlock 1 extra session for 1 coin.`;
+  } else if (extraUnlocked && !extraSessionUsed) {
+    extraSessionStatus.textContent = "Extra session unlocked! Starting it will cost 1 coin.";
+  } else {
+    extraSessionStatus.textContent = "Extra session used. See you tomorrow!";
+  }
+}
 
-            matched.forEach(p => {
-              const li = document.createElement("li");
-              li.classList.add("list-group-item");
-              li.textContent = p.name;
-              li.addEventListener("click", () => {
-                window.location.href = p.url;
-              });
-              suggestionsBox.appendChild(li);
-            });
+function updateDisplay() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  const str = `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  document.getElementById("time").textContent = str;
+  document.title = `${str} Pomodoro`;
+}
 
-            suggestionsBox.style.display = "block";
-          });
+function setTimeFromInputs() {
+  const workInput = parseInt(document.getElementById("workTime").value) || 25;
+  const breakInput = parseInt(document.getElementById("breakTime").value) || 5;
+  if (isWork) {
+    timeLeft = workInput * 60;
+    document.getElementById("status").textContent = "Work Session";
+  } else {
+    timeLeft = breakInput * 60;
+    document.getElementById("status").textContent = "Break Time!";
+  }
+  updateDisplay();
+}
 
-          // Hide suggestions when clicking outside
-          document.addEventListener("click", (e) => {
-            if (!e.target.closest(".search-container")) {
-              suggestionsBox.style.display = "none";
-            }
-          });
-        });
+// ---------- Timer Logic ----------
+function startTimer() {
+  clearInterval(timer);
+  ensureDailyReset();     // keep stats correct
+  setTimeFromInputs();
 
-  // --- On Page Load ---
-  window.onload = () => {
+  const cap = plan.maxFree;
+
+  // Gate starting a WORK session at/over cap
+  if (isWork && dailyPomodoros >= cap) {
+    if (extraSessionUsed) {
+      alert("You’ve already used your extra session today. Come back tomorrow!");
+      startBtn.disabled = true;
+      return;
+    }
+    if (!extraUnlocked) {
+      alert(`You’ve completed all ${cap} Pomodoro(s) today! Finish the break to unlock one extra session for 1 coin.`);
+      return;
+    }
+    // extraUnlocked && not used: charge 1 coin now
+    if (coins > 0) {
+      if (confirm("Start extra session for 1 coin?")) {
+        coins--;
+        localStorage.setItem("pomify_coins", String(coins));
+        coinsSpan.textContent = coins;
+        extraSessionUsed = true;
+        localStorage.setItem("pomify_extraSessionUsed", "true");
+        updateExtraSessionStatus();
+      } else {
+        return;
+      }
+    } else {
+      alert("You’ve unlocked the extra session, but you don’t have any coins!");
+      return;
+    }
+  }
+
+  startBtn.disabled = true;
+  resetBtn.disabled = false;
+  document.getElementById("status").textContent = isWork ? "Work Session" : "Break Time!";
+
+  timer = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      updateDisplay();
+      return;
+    }
+
+    // Time's up
+    clearInterval(timer);
+    alarm.play();
+
+    if (isWork) {
+      // Reward coins by plan multiplier
+      coins += plan.multiplier;
+      localStorage.setItem("pomify_coins", String(coins));
+      coinsSpan.textContent = coins;
+
+      // Count completed work session toward daily cap
+      dailyPomodoros++;
+      localStorage.setItem("pomify_dailyPomodoros", String(dailyPomodoros));
+      updateExtraSessionStatus();
+
+      // Switch to break
+      isWork = false;
+      const breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
+      timeLeft = breakMinutes * 60;
+      document.getElementById("status").textContent = "Break Time!";
+      updateDisplay();
+
+      setTimeout(() => startTimer(), 1500);
+    } else {
+      // Break finished
+      isWork = true;
+
+      // Unlock extra session right after the break that completes the cap
+      if (dailyPomodoros >= plan.maxFree && !extraUnlocked && !extraSessionUsed) {
+        alert(`🎉 You’ve completed ${plan.maxFree} Pomodoro(s) today! You can now use 1 coin for an extra session.`);
+        extraUnlocked = true;
+        localStorage.setItem("pomify_extraUnlocked", "true");
+        updateExtraSessionStatus();
+      }
+
+      document.getElementById("status").textContent = "Ready for next session!";
+      startBtn.disabled = false;
+      resetBtn.disabled = true;
+
+      const workMinutes = parseInt(document.getElementById("workTime").value) || 25;
+      timeLeft = workMinutes * 60;
+      updateDisplay();
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timer);
+  isWork = true;
+  const workMinutes = parseInt(document.getElementById("workTime")?.value) || 25;
+  timeLeft = workMinutes * 60;
+  document.getElementById("status").textContent = "Ready";
+  updateDisplay();
+  startBtn.disabled = false;
+  resetBtn.disabled = true;
+}
+
+// ---------- Tasks ----------
+function addTask() {
+  const input = document.getElementById("taskInput");
+  const text = input.value.trim();
+  if (!text) return;
+  addTaskToList(text);
+  input.value = "";
+  syncToEisenhower();
+}
+function addTaskToList(text) {
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <span>${text}</span>
+    <div>
+      <button class="btn btn-sm btn-outline-danger me-1" onclick="removeTask(this)">
+        <i class="bi bi-trash"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-dark" onclick="setActiveTask(this)">
+        <i class="bi bi-hourglass-split"></i>
+      </button>
+    </div>`;
+  document.getElementById("taskItems").appendChild(li);
+}
+function removeTask(btn) {
+  const li = btn.closest("li");
+  if (li === activeTask) activeTask = null;
+  li.remove();
+  syncToEisenhower();
+}
+function setActiveTask(btn) {
+  document.querySelectorAll("#taskItems li").forEach(li => li.classList.remove("active"));
+  activeTask = btn.closest("li");
+  activeTask.classList.add("active");
+}
+function syncToEisenhower() {
+  const taskTexts = Array.from(document.querySelectorAll("#taskItems li span"))
+    .map(span => span.textContent.trim());
+  localStorage.setItem("pomify_do_tasks", JSON.stringify(taskTexts));
+}
+function loadTasks() {
+  const savedTasks = JSON.parse(localStorage.getItem("pomify_do_tasks")) || [];
+  const taskList = document.getElementById("taskItems");
+  taskList.innerHTML = "";
+  savedTasks.forEach(text => addTaskToList(text));
+}
+
+// ---------- Cross-tab Sync ----------
+window.addEventListener("storage", (event) => {
+  if (event.key === "pomify_coins") {
+    coins = parseInt(event.newValue) || 0;
+    coinsSpan.textContent = coins;
+  }
+  if (event.key === "pomify_do_tasks") {
     loadTasks();
-    updateDisplay();
-    updateExtraSessionStatus();
-  };
+  }
+  if (event.key === "pomify_plan" || event.key === "pomify_plan_tier" || event.key === "pomify_plan_nextBilling") {
+    // Plan changed elsewhere — re-validate, reset if upgraded, and refresh UI
+    ensurePlanValidity();
+    ensureDailyReset();
+    // Easiest way to rebind caps/badge cleanly:
+    location.reload();
+  }
+});
 
+// ---------- Boot ----------
+window.onload = () => {
+  coinsSpan.textContent = coins;
+  loadTasks();
+  updateDisplay();
+  plan = getPlanConfig(); // in case ensureDailyReset changed tier-related state
+  injectPlanBadge();
+  updateExtraSessionStatus();
+};
 
+// Expose for buttons
+window.startTimer = startTimer;
+window.resetTimer = resetTimer;
+window.addTask = addTask;
+window.removeTask = removeTask;
+window.setActiveTask = setActiveTask;
 </script>
+
+
 
 
 

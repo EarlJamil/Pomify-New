@@ -434,20 +434,40 @@
         // Handle revert click
         // Handle revert click
         revertBtn.addEventListener("click", () => {
-          if (confirm("Are you sure you want to revert to the Basic plan?")) {
-            // Set plan to Basic
-            localStorage.setItem("pomify_plan", "Basic");
-            localStorage.removeItem("pomify_plan_date");
+          if (!confirm("Are you sure you want to revert to the Basic plan?")) return;
 
-            // Reset Pomi Coins to 0
-            localStorage.setItem("pomify_coins", 0);
-            document.getElementById("coins").textContent = 0;
+          // Canonical keys → Basic
+          localStorage.setItem("pomify_plan_tier", "basic");   // <- the important one
+          localStorage.setItem("pomify_plan_name", "Basic");
+          localStorage.setItem("pomify_plan", "Basic");        // legacy/back-compat
 
-            alert("Your plan has been reverted to Basic. All coins have been reset to 0.");
-            location.reload();
-          }
+          // Clear any billing info (support both old & new keys)
+          localStorage.removeItem("pomify_plan_nextBilling");  // ISO next billing (new)
+          localStorage.removeItem("pomify_plan_duration");
+          localStorage.removeItem("pomify_plan_date");         // your older date key
+
+          // Make today clearly Basic for same-day logic elsewhere
+          localStorage.setItem("pomify_lastTierOnDate", "basic");
+
+          // (Optional) Reset coins like your original behavior
+          localStorage.setItem("pomify_coins", "0");
+          document.getElementById("coins").textContent = "0";
+
+          alert("Your plan has been reverted to Basic. All coins have been reset to 0.");
+          location.reload();
         });
-      });
+
+        // Also show the revert button if either key says you're Premium
+        (function showRevertIfPremiumish(){
+          const tier = (localStorage.getItem("pomify_plan_tier") || "").toLowerCase();
+          const legacy = (localStorage.getItem("pomify_plan") || "").toLowerCase();
+          const isPremiumish = tier === "premium" || tier === "premium+" || legacy === "premium" || legacy === "premium+";
+          if (isPremiumish) {
+            document.getElementById("upgradeBtn").style.display = "none";
+            revertBtn.style.display = "inline-block";
+          }
+        })();
+        });
     </script>
 
       </div>
