@@ -228,6 +228,7 @@
               <button id="eraserBtn" class="btn btn-outline-danger"><i class="bi bi-eraser"></i> Eraser</button>
               <input type="color" id="colorPicker" value="#a00000" class="form-control form-control-color" title="Choose color">
               <button id="textBtn" class="btn btn-outline-danger"><i class="bi bi-type"></i> Text Box</button>
+              <button id="clearBtn" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> Clear</button>
               <button id="saveBtn" class="btn btn-outline-dark"><i class="bi bi-save"></i> Save as PDF</button>
             </div>
 
@@ -262,6 +263,17 @@
     document.getElementById("eraserBtn").onclick = () => { mode = "eraser"; setActiveButton("eraserBtn"); };
     document.getElementById("textBtn").onclick = () => { mode = "text"; setActiveButton("textBtn"); };
     document.getElementById("colorPicker").oninput = e => { color = e.target.value; ctx.strokeStyle = color; };
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (confirm("Are you sure you want to clear the entire Mind Map?")) {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Remove all text boxes and delete buttons
+        document.querySelectorAll(".draggable-text").forEach(el => el.remove());
+        document.querySelectorAll(".delete-btn").forEach(el => el.remove());
+      }
+    });
 
     // === DRAWING + ERASER ===
     canvas.addEventListener("mousedown", e => {
