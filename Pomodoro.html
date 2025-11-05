@@ -392,61 +392,83 @@
       (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " Pomodoro";
   }
 
+  function setTimeFromInputs() {
+      const workInput = parseInt(document.getElementById("workTime").value) || 25;
+      const breakInput = parseInt(document.getElementById("breakTime").value) || 5;
+      if (isWork) {
+        timeLeft = workInput * 60;
+        document.getElementById("status").innerHTML = "Work Session";
+      } else {
+        timeLeft = breakInput * 60;
+        document.getElementById("status").innerHTML = "Break Time!";
+      }
+      updateDisplay();
+    }
+
   // --- Start Timer Function ---
   function startTimer() {
     clearInterval(timer);
 
-    if (isWork && !isPremiumUser) {
-    if (dailyPomodoros < maxDailyPomodoros || extraUnlocked) {
-      dailyPomodoros++;
-      localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
-      updateExtraSessionStatus();
-    }
-  }
+    // Always refresh the timer based on the latest inputs before starting
+    setTimeFromInputs();
+
+
+  //   if (isWork && !isPremiumUser) {
+  //   if (dailyPomodoros < maxDailyPomodoros || extraUnlocked) {
+  //     dailyPomodoros++;
+  //     localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
+  //     updateExtraSessionStatus();
+  //   }
+  // }
 
     // --- Premium Users: Skip Limit Logic ---
     if (!isPremiumUser) {
       // --- Handle extra session start for free users only ---
       if (dailyPomodoros >= maxDailyPomodoros) {
-        if (extraSessionUsed) {
-          alert("You’ve already used your extra session today. Come back tomorrow!");
-          startBtn.disabled = true;
-          return;
-        }
-
-        if (extraUnlocked && !extraSessionUsed) {
-          if (coins > 0) {
-            alert("Starting your extra session will deduct 1 coin.");
-            coins--;
-            localStorage.setItem("pomify_coins", coins);
-            coinsSpan.textContent = coins;
-
-            extraSessionUsed = true;
-            localStorage.setItem("pomify_extraSessionUsed", true);
-            updateExtraSessionStatus();
-          } else {
-            alert("You’ve unlocked the extra session, but you don’t have any coins left!");
+        // If the current session is a break, allow it to run (after 5th Pomodoro)
+        if (!isWork) {
+          // Let the 5th break continue
+        } else {
+          // For new work sessions beyond 5
+          if (extraSessionUsed) {
+            alert("You’ve already used your extra session today. Come back tomorrow!");
+            startBtn.disabled = true;
             return;
           }
-        }
 
-        if (!extraUnlocked && !extraSessionUsed) {
-          if (!isWork) {
-            // still in 5th break
-          } else {
-            alert("You’ve already completed your 5 Pomodoro sessions. Wait until the break ends to unlock your extra session.");
+          if (extraUnlocked && !extraSessionUsed) {
+            if (coins > 0) {
+              alert("Starting your extra session will deduct 1 coin.");
+              coins--;
+              localStorage.setItem("pomify_coins", coins);
+              coinsSpan.textContent = coins;
+
+              extraSessionUsed = true;
+              localStorage.setItem("pomify_extraSessionUsed", true);
+              updateExtraSessionStatus();
+            } else {
+              alert("You’ve unlocked the extra session, but you don’t have any coins left!");
+              return;
+            }
+          } else if (!extraUnlocked) {
+            alert("You’ve completed your 5 Pomodoro sessions for today! Wait for the break to finish to unlock your extra session.");
             return;
           }
         }
       }
     }
 
+
     // --- Timer setup ---
     let workMinutes = parseInt(document.getElementById("workTime").value) || 25;
     let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
 
-    timeLeft = isWork ? workMinutes * 60 : breakMinutes * 60;
+    // Only set timeLeft if it hasn’t been pre-set for the next session
+    if (timeLeft <= 0 || timeLeft === undefined) {
+      timeLeft = isWork ? workMinutes * 60 : breakMinutes * 60;
+    }
     updateDisplay();
+
 
     startBtn.disabled = true;
     resetBtn.disabled = false;
@@ -462,6 +484,7 @@
         alarm.play();
 
         if (isWork) {
+          // --- Reward coins based on plan ---
           let coinReward = 1;
           if (userPlan.includes("premium+")) {
             coinReward = 3;
@@ -469,20 +492,29 @@
             coinReward = 2;
           }
 
-          // --- Add coins based on plan ---
           coins += coinReward;
           localStorage.setItem("pomify_coins", coins);
           coinsSpan.textContent = coins;
 
-          
+          // --- Increment daily Pomodoro count AFTER completing work ---
+          if (!isPremiumUser) {
+            if (dailyPomodoros < maxDailyPomodoros) {
+              dailyPomodoros++;
+              localStorage.setItem("pomify_dailyPomodoros", dailyPomodoros);
+              updateExtraSessionStatus();
+            }
+          }
 
-          // --- Automatically start break ---
+          // --- Switch to Break Mode ---
           isWork = false;
           let breakMinutes = parseInt(document.getElementById("breakTime").value) || 5;
           timeLeft = breakMinutes * 60;
           document.getElementById("status").innerHTML = "Break Time!";
           updateDisplay();
-          setTimeout(startTimer, 1000);
+
+          setTimeout(() => {
+            startTimer();
+          }, 1500);
         } else {
           isWork = true;
 
