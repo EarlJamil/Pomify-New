@@ -732,27 +732,104 @@
             }
           });
         });
+        (function planAwareShop(){
+          // Read canonical tier first, fallback to legacy
+          const rawTier = (localStorage.getItem('pomify_plan_tier') ||
+                          localStorage.getItem('pomify_plan') || 'basic').toLowerCase();
 
-  // Buy buttons logic
-  document.querySelectorAll(".buy-btn").forEach(button => {
-    button.addEventListener("click", (e) => {
-      e.preventDefault();
+          const tier = rawTier.includes('premium+') ? 'premium+' :
+                      rawTier.includes('premium')  ? 'premium'  : 'basic';
 
-      const name = button.getAttribute("data-name");
-      const price = button.getAttribute("data-price");
-      const description = button.getAttribute("data-description");
+          const display = tier === 'premium+' ? 'Premium+' :
+                          tier === 'premium'  ? 'Premium'  : 'Basic';
 
-      // Store all details in localStorage
-      localStorage.setItem("selectedProduct", JSON.stringify({
-        name, 
-        price,
-        description
-      }));
+          // If Basic, nothing to change
+          if (tier === 'basic') return;
 
-      // Redirect to transaction page
-      window.location.href = "Transaction.html";
+          // 1) Banner notice
+          const banner = document.querySelector('.shop-banner');
+          if (banner) {
+            const notice = document.createElement('div');
+            notice.className = 'alert alert-success mt-3 mb-0 text-center';
+            notice.innerHTML = `You’re currently on <strong>${display}</strong>. <a href="Settings.html" class="alert-link">Manage plan</a>.`;
+            banner.appendChild(notice);
+          }
+
+          // 2) Card badges + button states
+          const premiumBtn   = document.querySelector('.buy-btn[data-name="Premium"]');
+          const premiumPlusBtn = document.querySelector('.buy-btn[data-name="Premium+"]');
+
+          // helper to add a corner badge on a plan card
+          function markCardActive(btn, label='Active Plan') {
+            if (!btn) return;
+            const card = btn.closest('.card');
+            if (!card) return;
+            const tag = document.createElement('span');
+            tag.textContent = label;
+            tag.style.position = 'absolute';
+            tag.style.top = '12px';
+            tag.style.right = '12px';
+            tag.style.background = '#198754';
+            tag.style.color = '#fff';
+            tag.style.fontSize = '12px';
+            tag.style.padding = '4px 8px';
+            tag.style.borderRadius = '999px';
+            tag.style.boxShadow = '0 2px 6px rgba(0,0,0,.08)';
+            card.style.position = 'relative';
+            card.appendChild(tag);
+          }
+
+          // Disable a buy button and make it look inert
+          function disableButton(btn, text='Current Plan') {
+            if (!btn) return;
+            btn.textContent = text;
+            btn.classList.remove('btn-dark', 'btn-light');
+            btn.classList.add('btn-secondary');
+            btn.setAttribute('data-disabled', 'true');
+            btn.setAttribute('aria-disabled', 'true');
+            btn.style.pointerEvents = 'none';
+          }
+
+          if (tier === 'premium') {
+            // Premium is active
+            markCardActive(premiumBtn);
+            disableButton(premiumBtn, 'Current Plan');
+            // Keep Premium+ enabled (acts as upgrade)
+            if (premiumPlusBtn) {
+              premiumPlusBtn.textContent = 'Upgrade to Premium+';
+            }
+          }
+
+          if (tier === 'premium+') {
+            // Premium+ is active
+            markCardActive(premiumPlusBtn);
+            disableButton(premiumPlusBtn, 'Current Plan');
+            // Optionally disable Premium (to avoid “downgrades” from shop)
+            if (premiumBtn) {
+              premiumBtn.textContent = 'Downgrade not available here';
+              premiumBtn.setAttribute('data-disabled', 'true');
+              premiumBtn.classList.remove('btn-dark');
+              premiumBtn.classList.add('btn-secondary');
+              premiumBtn.style.pointerEvents = 'none';
+            }
+          }
+        })();
+      // Buy buttons logic
+      document.querySelectorAll(".buy-btn").forEach(button => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        // NEW: block if we marked it disabled
+        if (button.getAttribute('data-disabled') === 'true') return;
+
+        const name = button.getAttribute("data-name");
+        const price = button.getAttribute("data-price");
+        const description = button.getAttribute("data-description");
+
+        localStorage.setItem("selectedProduct", JSON.stringify({ name, price, description }));
+        window.location.href = "Transaction.html";
+      });
     });
-  });
 </script>
 
 
