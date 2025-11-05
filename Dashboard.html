@@ -504,48 +504,44 @@
 
 
       document.addEventListener("DOMContentLoaded", () => {
-      // Get coins
-      const coins = localStorage.getItem("pomify_coins") || 0;
-      document.getElementById("coins").textContent = coins;
+        // Get coins
+        const coins = localStorage.getItem("pomify_coins") || 0;
+        document.getElementById("coins").textContent = coins;
 
-      // Get user plan
-      const userPlanRaw = localStorage.getItem("pomify_plan") || "Basic";
-      const userPlan = userPlanRaw.toLowerCase();
+        // Prefer canonical tier if available
+        const tierRaw = (localStorage.getItem("pomify_plan_tier") || localStorage.getItem("pomify_plan") || "basic").toLowerCase();
+        const isPremiumPlus = tierRaw.includes("premium+");
+        const isPremium     = !isPremiumPlus && tierRaw.includes("premium");
 
-      // Target welcome banner elements
-      const welcomeBanner = document.querySelector(".welcome-banner");
-      const heading = welcomeBanner.querySelector("h3");       // "Unlock Your Full Potential"
-      const buttons = welcomeBanner.querySelectorAll("button"); // "Subscribe Now" & "Learn More"
+        // Target welcome banner elements
+        const welcomeBanner = document.querySelector(".welcome-banner");
+        const heading = welcomeBanner.querySelector("h3");       // old: "Unlock Your Full Potential"
+        const buttons = welcomeBanner.querySelectorAll("button"); // "Subscribe Now" & "Learn More"
 
-      // Determine plan info
-      let planText = "";
-      let planColor = "";
+        // If user is premium or premium+, hide CTA buttons and show a red-themed plan badge
+        if (isPremium || isPremiumPlus) {
+          buttons.forEach(btn => btn.style.display = "none");
 
-      if (userPlan.includes("premium+")) {
-        planText = "💎 Premium+ Access";
-        planColor = "#8a2be2"; // purple
-      } else if (userPlan.includes("premium")) {
-        planText = "🌟 Premium Access";
-        planColor = "#1db954"; // green
-      }
+          // Badge text
+          const planText = isPremiumPlus ? "Premium+ Access" : "Premium Access";
 
-      // If user is premium or premium+, hide buttons and change heading
-      if (userPlan.includes("premium")) {
-        buttons.forEach(btn => btn.style.display = "none"); // hide both buttons
+          // Use Pomify red scheme (same vibe as your banner)
+          const badge = document.createElement("span");
+          badge.textContent = planText;
+          badge.style.display = "inline-block";
+          badge.style.background = "linear-gradient(180deg, #b44a4a 0%, #4a001f 100%)";
+          badge.style.color = "#fff";
+          badge.style.padding = "10px 18px";
+          badge.style.borderRadius = "12px";
+          badge.style.fontWeight = "700";
+          badge.style.fontSize = "1.25rem";
+          badge.style.boxShadow = "0 4px 10px rgba(0,0,0,0.15)";
+          badge.style.border = "1px solid rgba(255,255,255,0.18)";
 
-        // Replace heading text with plan info
-        heading.textContent = planText;
-
-        // Style heading to look like a badge
-        heading.style.display = "inline-block";
-        heading.style.background = planColor;
-        heading.style.color = "#fff";
-        heading.style.padding = "10px 20px";
-        heading.style.borderRadius = "12px";
-        heading.style.fontWeight = "700";
-        heading.style.fontSize = "1.5rem";
-      }
-    });
+          // Replace heading with the badge
+          heading.replaceWith(badge);
+        }
+      });
     </script>
 
 

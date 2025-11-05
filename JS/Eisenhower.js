@@ -27,19 +27,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Show Premium Badge ---
   if (isPremiumUser && container) {
-    const badge = document.createElement("div");
-    badge.textContent = userPlan.includes("premium+")
-      ? "💎 Premium+ Access: Lifetime Productivity Tools"
-      : "🌟 Premium Access: Full Productivity Tools";
-    badge.style.background = userPlan.includes("premium+") ? "#8a2be2" : "#1db954";
-    badge.style.color = "white";
-    badge.style.padding = "8px 16px";
-    badge.style.borderRadius = "10px";
-    badge.style.margin = "15px auto";
-    badge.style.fontWeight = "600";
-    badge.style.textAlign = "center";
-    container.prepend(badge);
-  }
+  const badge = document.createElement("div");
+  badge.textContent = userPlan.includes("premium+")
+    ? "💎 Premium+ Access: Lifetime Productivity Tools"
+    : "🌟 Premium Access: Full Productivity Tools";
+
+  // Pomify red full-width scheme
+  badge.style.background = "linear-gradient(180deg, #b44a4a 0%, #4a001f 100%)";
+  badge.style.color = "white";
+  badge.style.padding = "12px 20px";
+  badge.style.borderRadius = "10px";
+  badge.style.margin = "0 auto 20px auto";
+  badge.style.fontWeight = "700";
+  badge.style.textAlign = "center";
+  badge.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  badge.style.border = "1px solid rgba(255,255,255,0.18)";
+  badge.style.width = "100%";          // full width
+  badge.style.display = "block";       // ensure it stretches fully
+  badge.style.letterSpacing = "0.5px";
+
+  container.prepend(badge);
+}
+
+
 
   // --- Hide Add Coin Button for Premium Users ---
   if (isPremiumUser && addCoinBtn) {
