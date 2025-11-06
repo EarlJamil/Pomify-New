@@ -334,6 +334,7 @@
   // Complete purchase
   document.getElementById('completePurchaseBtn').addEventListener('click', () => {
     if (!productData) return;
+    localStorage.removeItem("active_creator_code"); // clear any active code on purchase
 
     const nameLower = productData.name.toLowerCase();
 
