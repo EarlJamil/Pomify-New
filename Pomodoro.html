@@ -472,10 +472,12 @@ function updateExtraSessionStatus() {
   const cap = plan.maxFree;
   if (dailyPomodoros < cap) {
     extraSessionStatus.textContent = `Pomodoros used today: ${dailyPomodoros}/${cap}`;
-  } else if (!extraSessionUsed && !extraUnlocked) {
-    extraSessionStatus.textContent = `You’ve reached ${cap}. Finish the break to unlock 1 extra session for 1 coin.`;
-  } else if (extraUnlocked && !extraSessionUsed) {
-    extraSessionStatus.textContent = "Extra session unlocked! Starting it will cost 1 coin.";
+  } 
+  // else if (!extraSessionUsed && !extraUnlocked) {
+  //   extraSessionStatus.textContent = `You’ve reached ${cap}. Finish the break to unlock 1 extra session for 1 coin.`;
+  //} 
+  else if (extraUnlocked && !extraSessionUsed) {
+    extraSessionStatus.textContent = "Extra session unlocked! Starting it will cost 5 coins.";
   } else {
     extraSessionStatus.textContent = "Extra session used. See you tomorrow!";
   }
@@ -508,6 +510,8 @@ function startTimer() {
   ensureDailyReset();     // keep stats correct
   setTimeFromInputs();
 
+
+
   const cap = plan.maxFree;
 
   // Gate starting a WORK session at/over cap
@@ -518,13 +522,13 @@ function startTimer() {
       return;
     }
     if (!extraUnlocked) {
-      alert(`You’ve completed all ${cap} Pomodoro(s) today! Finish the break to unlock one extra session for 1 coin.`);
+      alert(`You’ve completed all ${cap} Pomodoro(s) today! Finish the break to unlock one extra session for 5 coins.`);
       return;
     }
     // extraUnlocked && not used: charge 1 coin now
-    if (coins > 0) {
+    if (coins > 5) {
       if (confirm("Start extra session for 1 coin?")) {
-        coins--;
+        coins= coins-5;
         localStorage.setItem("pomify_coins", String(coins));
         coinsSpan.textContent = coins;
         extraSessionUsed = true;
@@ -543,6 +547,17 @@ function startTimer() {
   resetBtn.disabled = false;
   document.getElementById("status").textContent = isWork ? "Work Session" : "Break Time!";
 
+
+  // Count completed work session toward daily cap
+      dailyPomodoros++;
+      localStorage.setItem("pomify_dailyPomodoros", String(dailyPomodoros));
+      if (dailyPomodoros == cap){
+        alert(`🎉 You’ve completed ${plan.maxFree} Pomodoro(s) today! You can now use 5 coins for an extra session.`);
+        extraUnlocked = true;
+        localStorage.setItem("pomify_extraUnlocked", "true");
+      }
+      updateExtraSessionStatus();
+
   timer = setInterval(() => {
     if (timeLeft > 0) {
       timeLeft--;
@@ -560,10 +575,10 @@ function startTimer() {
       localStorage.setItem("pomify_coins", String(coins));
       coinsSpan.textContent = coins;
 
-      // Count completed work session toward daily cap
-      dailyPomodoros++;
-      localStorage.setItem("pomify_dailyPomodoros", String(dailyPomodoros));
-      updateExtraSessionStatus();
+      // // Count completed work session toward daily cap
+      // dailyPomodoros++;
+      // localStorage.setItem("pomify_dailyPomodoros", String(dailyPomodoros));
+      // updateExtraSessionStatus();
 
       // Switch to break
       isWork = false;
@@ -579,7 +594,7 @@ function startTimer() {
 
       // Unlock extra session right after the break that completes the cap
       if (dailyPomodoros >= plan.maxFree && !extraUnlocked && !extraSessionUsed) {
-        alert(`🎉 You’ve completed ${plan.maxFree} Pomodoro(s) today! You can now use 1 coin for an extra session.`);
+        alert(`🎉 You’ve completed ${plan.maxFree} Pomodoro(s) today! You can now use 5 coins for an extra session.`);
         extraUnlocked = true;
         localStorage.setItem("pomify_extraUnlocked", "true");
         updateExtraSessionStatus();

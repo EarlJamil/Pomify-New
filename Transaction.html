@@ -184,14 +184,14 @@
   let creatorDiscountActive = false;
 
   // If creator code was active previously, prefill and apply
-  if (storedCreator) {
-    codeInput.value = storedCreator;
-    creatorDiscountActive = storedCreator.toLowerCase() === 'earlpom';
-    if (creatorDiscountActive) {
-      codeMsg.textContent = "✅ Creator code active.";
-      codeMsg.classList.add('text-success');
-    }
-  }
+  // if (storedCreator) {
+  //   codeInput.value = storedCreator;
+  //   creatorDiscountActive = storedCreator.toLowerCase() === 'earlpom';
+  //   if (creatorDiscountActive) {
+  //     codeMsg.textContent = "✅ Creator code active.";
+  //     codeMsg.classList.add('text-success');
+  //   }
+  // }
 
   // If no selected product: fallback to Basic (you can change behavior as needed)
   if (!productData) {
@@ -351,6 +351,7 @@
 
       // Backwards-compat with older pages that read this:
       localStorage.setItem('pomify_plan', displayName);
+      localStorage.removeItem('active_creator_code'); // clear creator code on plan purchase
 
       // Show user
       alert(`🎉 Subscribed to ${displayName} for ${months} month(s).\nNext billing: ${formatFullDate(nextBilling)}`);
@@ -373,6 +374,7 @@
 
     } else if (nameLower.includes('coin')) {
       // coin packs (unchanged)
+      
       const coinCount = parseInt(productData.name);
       let currentCoins = parseInt(localStorage.getItem('pomify_coins')) || 0;
       currentCoins += (isNaN(coinCount) ? 0 : coinCount);
