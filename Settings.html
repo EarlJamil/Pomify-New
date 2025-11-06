@@ -389,6 +389,8 @@
       document.addEventListener("DOMContentLoaded", () => {
         let plan = localStorage.getItem("pomify_plan") || "Basic";
         let planDate = localStorage.getItem("pomify_plan_date");
+        let nextBillingDate = localStorage.getItem("pomify_plan_nextBilling");
+
 
         const planName = document.getElementById("planName");
         const nextBilling = document.getElementById("nextBilling");
@@ -409,24 +411,25 @@
         planName.textContent = plan + " Plan";
         versionDisplay.textContent = plan + " Version";
 
+        function formatFullDate(dateString) {
+          if (!dateString) return "Invalid date";
+          const date = new Date(dateString);
+          const options = { year: "numeric", month: "long", day: "numeric" };
+          return date.toLocaleDateString("en-US", options);
+        }
         // Compute next billing date
-        if (planDate) {
-          const purchaseDate = new Date(planDate);
-          const formatted = purchaseDate.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          });
-
-          nextBilling.textContent = "Next Billing: " + formatted;
-          billingDisplay.textContent = "Next Billing: " + formatted;
+        if (plan.toLowerCase() !== "basic") {
+          const formattedDate = formatFullDate(nextBillingDate);
+          nextBilling.textContent = "Next Billing: " +formattedDate;
+          billingDisplay.textContent = "Next Billing: " + formattedDate;
         } else {
           nextBilling.textContent = "No active billing cycle";
           billingDisplay.textContent = "No active billing cycle";
         }
 
         // Hide upgrade button for Premium, show revert option
-        if (plan.toLowerCase() === "premium" || plan.toLowerCase() === "premium+") {
+        // plan.toLowerCase() === "premium" || 
+        if (plan.toLowerCase() === "premium+") {
           upgradeBtn.style.display = "none";
           revertBtn.style.display = "inline-block";
         }
