@@ -324,12 +324,12 @@
   }
 
   // initial summary update (also re-apply creator if persisted)
-  if (storedCreator && storedCreator.toLowerCase() === 'earlpom') {
-    creatorDiscountActive = true;
-    codeMsg.textContent = '✅ Creator code active.';
-    codeMsg.classList.add('text-success');
-  }
-  updateSummary();
+  // if (storedCreator && storedCreator.toLowerCase() === 'earlpom') {
+  //   creatorDiscountActive = true;
+  //   codeMsg.textContent = '✅ Creator code active.';
+  //   codeMsg.classList.add('text-success');
+  // }
+  // updateSummary();
 
   // Complete purchase
   document.getElementById('completePurchaseBtn').addEventListener('click', () => {
