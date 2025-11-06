@@ -527,7 +527,7 @@ function startTimer() {
     }
     // extraUnlocked && not used: charge 1 coin now
     if (coins > 5) {
-      if (confirm("Start extra session for 1 coin?")) {
+      if (confirm("Start extra session for 5 coins?")) {
         coins= coins-5;
         localStorage.setItem("pomify_coins", String(coins));
         coinsSpan.textContent = coins;
