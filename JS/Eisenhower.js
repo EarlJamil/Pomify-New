@@ -170,12 +170,12 @@ function markDone(task) {
   if (dailyTasksDone >= DAILY_LIMIT) {
     if (!extraUsed) {
       const useExtra = confirm(
-        "You’ve reached your daily limit of 5 completed tasks.\nUse 1 coin for an extra session?"
+        "You’ve reached your daily limit of 5 completed tasks.\nUse 5 coin for an extra session?"
       );
       if (useExtra) {
         let coins = parseInt(localStorage.getItem("pomify_coins") || "0");
-        if (coins > 0) {
-          coins--;
+        if (coins > 5) {
+          coins= coins-5;
           localStorage.setItem("pomify_coins", coins);
           extraUsed = true;
           localStorage.setItem("eisenhower_extraUsed", true);

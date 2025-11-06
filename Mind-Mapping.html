@@ -417,15 +417,15 @@
         const maxFreeSaves = 2;
         if (dailySaves >= maxFreeSaves) {
           if (!extraSaveUsed && coins > 0) {
-            const useCoin = confirm("You’ve reached your 2 free saves today. Use 1 coin to save again?");
+            const useCoin = confirm("You’ve reached your 2 free saves today. Use 5 coins to save again?");
             if (useCoin) {
-              coins--;
+              coins = coins - 5;
               localStorage.setItem("pomify_coins", coins);
               if (coinsSpan) coinsSpan.textContent = coins;
               extraSaveUsed = true;
               localStorage.setItem("mindmap_extraSaveUsed", true);
               await saveAsPDF();
-              alert("✅ Mind Map saved using 1 coin!");
+              alert("✅ Mind Map saved using 5 coins!");
             }
           } else {
             alert("❌ No coins left or extra save already used. Come back tomorrow or upgrade to Premium!");
