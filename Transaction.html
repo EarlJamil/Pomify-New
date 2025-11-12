@@ -140,6 +140,25 @@
     <button class="complete-btn" id="completePurchaseBtn">Complete Purchase</button>
     <span class="go-back" id="goBackBtn">Go back to shop</span>
   </div>
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold text-success">Success 🎉</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="successModalBody">
+        <!-- JS will fill this message -->
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-success rounded-pill px-4" id="successOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
   // ------- Helpers -------
@@ -326,7 +345,7 @@
   // initial summary update (also re-apply creator if persisted)
   // if (storedCreator && storedCreator.toLowerCase() === 'earlpom') {
   //   creatorDiscountActive = true;
-  //   codeMsg.textContent = '✅ Creator code active.';
+  //   codeMsg.textContent = 'Creator code active.';
   //   codeMsg.classList.add('text-success');
   // }
   // updateSummary();
@@ -355,8 +374,19 @@
       localStorage.removeItem('active_creator_code'); // clear creator code on plan purchase
 
       // Show user
-      alert(`🎉 Subscribed to ${displayName} for ${months} month(s).\nNext billing: ${formatFullDate(nextBilling)}`);
-    }
+    const modalBody = document.getElementById("successModalBody");
+    modalBody.innerHTML = `
+      <p>You’ve successfully subscribed to <strong>${displayName}</strong> for <strong>${months}</strong> month(s).</p>
+      <p class="mb-0">Next billing date: <strong>${formatFullDate(nextBilling)}</strong></p>
+    `;
+    const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+    successModal.show();
+
+    // When OK is clicked → redirect
+    document.getElementById("successOkBtn").onclick = () => {
+      successModal.hide();
+      window.location.href = 'Shop.html';
+    };    }
 
     if (nameLower.includes('premium')) {
       // figure tier
@@ -380,11 +410,21 @@
       let currentCoins = parseInt(localStorage.getItem('pomify_coins')) || 0;
       currentCoins += (isNaN(coinCount) ? 0 : coinCount);
       localStorage.setItem('pomify_coins', String(currentCoins));
-      alert(`💰 You received ${(isNaN(coinCount) ? 0 : coinCount)} coins! Total: ${currentCoins}`);
-    }
+      const modalBody = document.getElementById("successModalBody");
+      modalBody.innerHTML = `
+        <p>💰 You received <strong>${isNaN(coinCount) ? 0 : coinCount}</strong> coins!</p>
+        <p class="mb-0">Your new total is <strong>${currentCoins}</strong> coins.</p>
+      `;
+      const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+      successModal.show();
+
+      document.getElementById("successOkBtn").onclick = () => {
+        successModal.hide();
+        window.location.href = 'Shop.html';
+      };    }
 
     // redirect to shop after purchase
-    window.location.href = 'Shop.html';
+    //window.location.href = 'Shop.html';
   });
 
   // Go back link

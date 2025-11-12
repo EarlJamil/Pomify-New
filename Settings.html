@@ -325,6 +325,22 @@
 
         </div>
 
+        <!-- Success Modal -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4">
+              <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-success">Success 🎉</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" id="successModalBody"></div>
+              <div class="modal-footer border-0">
+                <button type="button" class="btn btn-success rounded-pill px-4" id="successOkBtn">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- JS Logic -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -456,8 +472,18 @@
           localStorage.setItem("pomify_coins", "0");
           document.getElementById("coins").textContent = "0";
 
-          alert("Your plan has been reverted to Basic. All coins have been reset to 0.");
-          location.reload();
+          const modalBody = document.getElementById("successModalBody");
+          modalBody.innerHTML = `
+            <p>Your plan has been reverted to <strong>Basic</strong>.</p>
+            <p class="mb-0">All coins have been reset to <strong>0</strong>.</p>
+          `;
+          const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+          successModal.show();
+
+          document.getElementById("successOkBtn").onclick = () => {
+            successModal.hide();
+            location.reload();
+          };
         });
 
         // Also show the revert button if either key says you're Premium
